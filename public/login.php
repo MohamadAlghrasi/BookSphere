@@ -7,9 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
     <!-- Main Template CSS -->
-    <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/main.css">
 </head>
 
 <body>

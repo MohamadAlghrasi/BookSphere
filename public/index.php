@@ -52,10 +52,10 @@
                             </div>
                             <ul class="user-login d-flex mb-0">
                                 <li class="me-3">
-                                    <a href="auth/login.php">Sign In</a>
+                                    <a href="login.php">Sign In</a>
                                 </li>
                                 <li>
-                                    <a href="auth/register.php">Register</a>
+                                    <a href="register.php">Register</a>
                                 </li>
                             </ul>
                         </div>

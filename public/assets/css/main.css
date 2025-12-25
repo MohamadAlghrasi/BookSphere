@@ -1436,7 +1436,7 @@ ol {
 }
 
 .header .topbar {
-  background-color: var(--bs-white);
+  background-color: rgb(8, 19, 56);
   padding: 18px 0;
 }
 

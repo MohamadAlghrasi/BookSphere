@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Add Sale</title>
+    <link href="assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="assets/css/sb-admin-2.min.css" rel="stylesheet">
+</head>
+
+<body id="page-top">
+    <div id="wrapper">
+        <?php include 'includes/sidebar.php'; ?>
+        <div id="content-wrapper" class="d-flex flex-column">
+            <div id="content">
+                <?php include 'includes/header.php'; ?>
+                <div class="container-fluid">
+
+                    <h1 class="h1 mb-4 text-gray-900">Add Sale</h1>
+
+                    <div class="card shadow mb-4" style="max-width:720px;">
+                        <div class="card-body">
+                            <form action="#" method="post">
+                                <div class="form-group">
+                                    <label>product name</label>
+                                    <input type="text" class="form-control" name="product_name" value="Dextera bangle" readonly>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Original product price</label>
+                                    <input type="text" class="form-control" name="original_price" value="JD80" readonly>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Discount %</label>
+                                    <input type="number" class="form-control" name="discount" placeholder="Enter Discount Percentage">
+                                </div>
+
+                                <button type="submit" class="btn btn-success">ADD</button>
+                                <a href="products.php" class="btn btn-link ml-3">&larr; Go Back</a>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+                <?php include 'includes/footer.php'; ?>
+            </div>
+        </div>
+    </div>
+    <?php include 'includes/scripts.php'; ?>
+</body>
+
+</html>

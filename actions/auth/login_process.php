@@ -1,6 +1,7 @@
 <?php
+session_start();
 
-require_once __DIR__ . '/../../config/db.php';
+require_once __DIR__ . '/../../helpers/db_queries.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
@@ -8,14 +9,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'];
 
     if (!empty($email) && !empty($password)) {
-        $stmt = $conn->prepare("SELECT pass FROM users where email = ?");
-        $stmt->bind_param('s', $email);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $row = $result->fetch_assoc();
+        $sql = "SELECT user_id, name, role, pass FROM users WHERE email = ?";
+        $type = "s";
+        $param = array($email);
+        $result = selectQuery($conn, $sql, $type, $param);
         if ($result->num_rows === 1) {
+            $row = $result->fetch_assoc();
+
             if ($password === $row['pass']) {
-                header("location: ../../public/shop.php");
+
+                $_SESSION['user_id'] = $row['user_id'];
+                $_SESSION['name']    = $row['name'];
+                $_SESSION['role']    = $row['role'];
+
+                header("Location: ../../public/shop.php");
                 exit;
             } else {
                 echo "Email or Password Wrong";
@@ -23,5 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             echo "Email doesn't exist";
         }
+
+        $conn->close();
     }
 }

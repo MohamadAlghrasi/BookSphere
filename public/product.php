@@ -1,3 +1,33 @@
+<?php
+require_once __DIR__ . '/../helpers/db_queries.php';
+$book_id = $_GET['book_id'];
+
+// Queries
+$sqlBook = "SELECT  books.book_name, books.price, books.book_description, books.stock, books.quantity, authors.author_name, categories.name from books
+        JOIN book_author on book_author.book_id = books.book_id 
+        JOIN authors on authors.author_id = book_author.author_id
+        JOIN book_category ON book_category.book_id = books.book_id
+        JOIN categories ON categories.category_id = book_category.category_id
+        WHERE books.book_id = ?";
+
+$resultBook = selectQuery($conn, $sqlBook, "i", [$book_id]);
+$rowBook = $resultBook->fetch_assoc();
+// --
+$sqlReview = "SELECT users.name, rating, review_comment, reviews.created_at from reviews 
+        join books on books.book_id = reviews.book_id
+        join users on users.user_id = reviews.user_id where books.book_id = ?;";
+
+$resultReview = selectQuery($conn, $sqlReview, "i", [$book_id]);
+// --
+$sqlAvg = "SELECT count(rating) as num, AVG(rating) AS avg FROM reviews WHERE book_id = ?";
+$resultAvg = selectQuery($conn, $sqlAvg, "i", [$book_id]);
+$avgRow = $resultAvg->fetch_assoc();
+
+$avgRating = (float)($avgRow['avg'] ?? 0);
+$starsFilled = (int) round($avgRating);
+$numOfReviews = $avgRow['num'];
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -57,31 +87,35 @@
             <div class="col-lg-8">
                 <div class="card shadow-sm">
                     <div class="card-body">
-                        <h3 class="mb-1">Book Title</h3>
-                        <p class="text-muted mb-2">by <strong>Author Name</strong></p>
+                        <h3 class="mb-1"><?= $rowBook['book_name'] ?></h3>
+                        <p class="text-muted mb-2">by <strong><?= $rowBook['author_name'] ?></strong></p>
 
                         <!-- Rating (UI only) -->
                         <div class="d-flex align-items-center gap-2 mb-3">
-                            <div>
-                                <i class="lni lni-star-filled"></i>
-                                <i class="lni lni-star-filled"></i>
-                                <i class="lni lni-star-filled"></i>
-                                <i class="lni lni-star-filled"></i>
-                                <i class="lni lni-star"></i>
+                            <div class="mb-2">
+                                <?php $stars = $starsFilled;
+                                while ($stars > 0): ?>
+                                    <i class="lni lni-star-filled"></i>
+                                <?php
+                                    $stars--;
+                                endwhile; ?>
+                                <?php $remaining = (5 - $starsFilled);
+                                while ($remaining > 0): ?>
+                                    <i class="lni lni-star"></i>
+                                <?php $remaining--;
+                                endwhile; ?>
                             </div>
-                            <small class="text-muted">(4.0)</small>
+                            <!-- Here, if there's enought time calculate avg -->
+                            <small class="text-muted"><?= "( " . $avgRating . ", &nbsp;&nbsp;&nbsp;" . $numOfReviews . " Reviews )" ?></small>
                         </div>
 
                         <div class="d-flex align-items-center gap-3 mb-3">
-                            <h4 class="mb-0">$15.00</h4>
+                            <h4 class="mb-0"><?= $rowBook['price'] ?></h4>
                             <span class="badge bg-success">-10%</span>
-                            <small class="text-muted text-decoration-line-through">$16.50</small>
+                            <small class="text-muted text-decoration-line-through"><?= $rowBook['price'] ?></small>
                         </div>
 
-                        <p class="mb-4">
-                            Simple description about the book. Later this will come from the database.
-                            Keep it short and clear for now.
-                        </p>
+                        <p class="mb-4"><?= $rowBook['book_description'] ?></p>
 
                         <!-- Actions -->
                         <div class="row g-2 mb-4">
@@ -103,13 +137,18 @@
                             <div class="col-md-4">
                                 <div class="border rounded p-3 h-100">
                                     <small class="text-muted d-block">Category</small>
-                                    <strong>Programming</strong>
+                                    <strong><?= $rowBook['name'] ?></strong>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="border rounded p-3 h-100">
                                     <small class="text-muted d-block">Stock</small>
-                                    <strong>In Stock</strong>
+                                    <strong><?php if ($rowBook['stock'] >= 1): ?>
+                                            <span class="badge bg-success">InStock</span>
+                                        <?php else: ?>
+                                            <span class="badge bg-danger">Out Of Stock</span>
+                                        <?php endif ?>
+                                    </strong>
                                 </div>
                             </div>
                             <div class="col-md-4">
@@ -129,37 +168,34 @@
         <div class="card shadow-sm mt-4">
             <div class="card-body">
                 <h5 class="mb-3">Reviews</h5>
-
-                <div class="border rounded p-3 mb-3">
-                    <div class="d-flex justify-content-between">
-                        <strong>User Name</strong>
-                        <small class="text-muted">2025-12-25</small>
-                    </div>
-                    <div class="mb-2">
-                        <i class="lni lni-star-filled"></i>
-                        <i class="lni lni-star-filled"></i>
-                        <i class="lni lni-star-filled"></i>
-                        <i class="lni lni-star"></i>
-                        <i class="lni lni-star"></i>
-                    </div>
-                    <p class="mb-0">Nice book, simple and useful.</p>
-                </div>
-
-                <div class="border rounded p-3">
-                    <div class="d-flex justify-content-between">
-                        <strong>User Name</strong>
-                        <small class="text-muted">2025-12-20</small>
-                    </div>
-                    <div class="mb-2">
-                        <i class="lni lni-star-filled"></i>
-                        <i class="lni lni-star-filled"></i>
-                        <i class="lni lni-star-filled"></i>
-                        <i class="lni lni-star-filled"></i>
-                        <i class="lni lni-star"></i>
-                    </div>
-                    <p class="mb-0">Great quality, fast delivery.</p>
-                </div>
-
+                <?php
+                if ($resultReview->num_rows > 0) {
+                    while ($rowReview = $resultReview->fetch_assoc()) {
+                ?>
+                        <div class="border rounded p-3 mb-3">
+                            <div class="d-flex justify-content-between">
+                                <strong><?= $rowReview['name'] ?></strong>
+                                <small class="text-muted"><?= $rowReview['created_at'] ?></small>
+                            </div>
+                            <div class="mb-2">
+                                <?php $filled = $rowReview['rating'];
+                                while ($filled > 0): ?>
+                                    <i class="lni lni-star-filled"></i>
+                                <?php
+                                    $filled--;
+                                endwhile; ?>
+                                <?php $empty = (5 - $rowReview['rating']);
+                                while ($empty > 0): ?>
+                                    <i class="lni lni-star"></i>
+                                <?php $empty--;
+                                endwhile; ?>
+                            </div>
+                            <p class="mb-0"><?= $rowReview['review_comment'] ?></p>
+                        </div>
+                <?php
+                    }
+                }
+                ?>
             </div>
         </div>
 

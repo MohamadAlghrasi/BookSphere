@@ -173,8 +173,11 @@ $resultCat = selectQuery($conn, $sqlCat);
                     <div class="col-lg-3 col-md-4 col-6">
                         <div class="card shadow-sm h-100">
                             <div class="card-body">
-                                <?php if (!empty($row['image_path'])): ?>
-                                    <img src="<?= htmlspecialchars($row['image_path']) ?>"
+                                <?php if (!empty($row['image_path'])):
+                                    $image = str_replace(' ', '%20', $row['image_path']);
+
+                                ?>
+                                    <img src="<?= '../admin/' . $image ?>"
                                         alt="Book cover"
                                         class="rounded mb-3 w-100"
                                         style="height:200px;object-fit:cover;">

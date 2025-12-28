@@ -180,11 +180,14 @@ $total = $subtotal + $shipping;
                                                 <tr>
                                                     <td>
                                                         <div class="d-flex gap-3 align-items-center">
-                                                            <?php if (!empty($item['image_path'])): ?>
-                                                                <img src="<?= htmlspecialchars($item['image_path']) ?>" 
-                                                                     alt="Book cover" 
-                                                                     style="width:60px;height:80px;object-fit:cover;" 
-                                                                     class="rounded">
+                                                            <?php if (!empty($item['image_path'])):
+                                                                $image = str_replace(' ', '%20', $item['image_path']);
+
+                                                            ?>
+                                                                <img src="<?= '../admin/' . $image ?>"
+                                                                    alt="Book cover"
+                                                                    style="width:60px;height:80px;object-fit:cover;"
+                                                                    class="rounded">
                                                             <?php else: ?>
                                                                 <div class="bg-light rounded" style="width:60px;height:80px;"></div>
                                                             <?php endif; ?>

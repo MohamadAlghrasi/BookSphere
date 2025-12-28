@@ -54,7 +54,7 @@
                                         <tr>
                                             <td><?=$c++?></td>
                                             <td><?= htmlspecialchars($p['publisher_name']) ?></td>
-                                            <td><a href="#" class="text-primary"><i class="fas fa-edit fa-lg"></i></a></td>
+                                            <td><a href="update_publisher.php?id=<?= $p['publisher_id'] ?>" class="text-primary"><i class="fas fa-edit fa-lg"></i></a></td>
                                             <td><a href="#" class="text-dark"><i class="fas fa-trash-alt fa-lg"></i></a></td>
                                         </tr>
                                         <?php endwhile; ?>

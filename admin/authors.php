@@ -56,7 +56,7 @@
                                             <td><?=$c++?></td>
                                             <td><?= htmlspecialchars($a['author_name']) ?></td>
                                             <td><?= htmlspecialchars(substr($a['author_description'],0,120)) ?></td>
-                                            <td><a href="#" class="text-primary"><i class="fas fa-edit fa-lg"></i></a></td>
+                                            <td><a href="update_author.php?id=<?= $a['author_id'] ?>" class="text-primary"><i class="fas fa-edit fa-lg"></i></a></td>
                                             <td><a href="#" class="text-dark"><i class="fas fa-trash-alt fa-lg"></i></a></td>
                                         </tr>
                                         <?php endwhile; ?>

@@ -33,7 +33,7 @@ if (isset($_POST['submit'])) {
     }
     $image_path = "";
     if (isset($_FILES['book_image']) && $_FILES['book_image']['error'] == 0) {
-        $upload_dir = "assets/img/";
+        $upload_dir = "assets/img";
         $image_name = time() . "_" . $_FILES['book_image']['name'];
         $image_path = $upload_dir . $image_name;
         move_uploaded_file($_FILES['book_image']['tmp_name'], $image_path);

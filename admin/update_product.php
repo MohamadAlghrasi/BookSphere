@@ -30,10 +30,16 @@ if (isset($_POST['submit'])) {
     }
     $image_path = "";
     if (isset($_FILES['book_image']) && $_FILES['book_image']['error'] == 0) {
-        $upload_dir = "assets/img/";
-        $image_name = time() . "_" . $_FILES['book_image']['name'];
-        $image_path = $upload_dir . $image_name;
-        move_uploaded_file($_FILES['book_image']['tmp_name'], $image_path);
+        // Save uploaded files into public folder for frontend
+        $upload_dir = __DIR__ . '/../public/assets/images/products/';
+        if (!is_dir($upload_dir)) mkdir($upload_dir, 0755, true);
+        $image_name = time() . "_" . basename($_FILES['book_image']['name']);
+        $full_path = $upload_dir . $image_name;
+        if (move_uploaded_file($_FILES['book_image']['tmp_name'], $full_path)) {
+            $image_path = 'assets/images/products/' . $image_name;
+        } else {
+            $errors[] = 'فشل رفع الصورة.';
+        }
     }
     // $check_category = $db->query("SELECT category_id FROM categories WHERE category_id = ?", [$category_id]);
     // if (empty($check_category)) {
@@ -46,12 +52,11 @@ if (isset($_POST['submit'])) {
 
     if (empty($errors)) {
         try {
-            $sql = "UPDATE  books SET isbn= ?, publisher_id= ?, book_name= ?, book_description= ?, stock= ?, price= ? WHERE book_id = $book_id";
-            $db->query($sql, [$isbn, $publisher_id, $book_name, $description, $stock, $price]);
-            // $new_book_id = $db->lastInsertId();
-            // $new_book_id = $db->query("SELECT book_id FROM books WHERE isbn = ?", [$isbn]);
+            $sql = "UPDATE books SET isbn = ?, publisher_id = ?, book_name = ?, book_description = ?, stock = ?, price = ? WHERE book_id = ?";
+            $db->query($sql, [$isbn, $publisher_id, $book_name, $description, $stock, $price, $book_id]);
+            // remove and re-insert relations
             $db->query("DELETE FROM book_author WHERE book_id = ?", [$book_id]);
-            foreach ($selected_authors as $a_id) {
+            foreach ($selgected_authors as $a_id) {
                 $db->query("INSERT INTO book_author (book_id, author_id) VALUES (?, ?)", [$book_id, $a_id]);
             }
 

@@ -5,28 +5,28 @@ $db = Database::getInstance();
 
 if(isset($_POST['submit'])) {
     $errors = [];
-    $name = htmlspecialchars(trim($_POST['name']));
-    $category_id =  $_GET['id'];
+    $author_name = htmlspecialchars(trim($_POST['author_name']));
+    $author_id =  $_GET['id'];
 
-if (empty($name)) {
-        $errors[] = "اسم القسم مطلوب.";
-    } else {
-        $sql_check = "SELECT name FROM categories WHERE name = ? ";
-        $existing_category = $db->query($sql_check, [$name])->fetch();
+if (empty($author_name)) {
+        $errors[] = "اسم القسم مطلوب.";}
+    // } else {
+    //     $sql_check = "SELECT name FROM categories WHERE name = ? ";
+    //     $existing_category = $db->query($sql_check, [$name])->fetch();
 
-        if ($existing_category) {
-            $errors[] = "خطأ: اسم القسم هذا موجود مسبقاً، يرجى اختيار اسم آخر.";
-        }
-    }
+    //     if ($existing_category) {
+    //         $errors[] = "خطأ: اسم القسم هذا موجود مسبقاً، يرجى اختيار اسم آخر.";
+    //     }
+    // }
 
     // 3. إذا لم توجد أخطاء، يتم التحديث
     if (empty($errors)) {
 
         try {
-            $sql_update = "UPDATE categories SET name = ? WHERE category_id = ?";
-            $db->query($sql_update, [$name, $category_id]);
+            $sql_update = "UPDATE authors SET author_name = ? WHERE author_id = ?";
+            $db->query($sql_update, [$author_name, $author_id]);
 
-            header("Location: categories.php?status=updated");
+            header("Location: authors.php?status=updated");
             exit();
             } catch (Exception $e) {
             $errors[] = "حدث خطأ أثناء التحديث: " . $e->getMessage();
@@ -61,14 +61,14 @@ if (empty($name)) {
                             <?php endif; ?>
                 <div class="container-fluid">
 
-                    <h1 class="h1 mb-4 text-gray-900">Edit Category</h1>
+                    <h1 class="h1 mb-4 text-gray-900">Edit Author</h1>
 
                     <div class="card shadow mb-4" style="max-width:720px;">
                         <div class="card-body">
                             <form action="#" method="post">
                                 <div class="form-group">
-                                    <label>Category Name</label>
-                                    <input type="text" class="form-control" name="name" value="" required>
+                                    <label>Author Name</label>
+                                    <input type="text" class="form-control" name="author_name" value="" required>
                                 </div>
 
                                 <button type="submit" class="btn btn-primary" name="submit">Update</button>

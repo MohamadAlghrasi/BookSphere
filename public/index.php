@@ -228,7 +228,7 @@ $resultBooks = selectQuery($conn, $sqlBooks);
                                     <!-- Book Image -->
                                     <div class="position-relative mb-3" style="height: 250px; overflow: hidden; border-radius: 10px;">
                                         <?php if (!empty($book['image_path'])): ?>
-                                            <img src="<?= htmlspecialchars($book['image_path']) ?>"
+                                            <img src="<?= htmlspecialchars( $book['image_path']) ?>"
                                                 alt="<?= htmlspecialchars($book['book_name']) ?>"
                                                 class="w-100 h-100"
                                                 style="object-fit: cover;">

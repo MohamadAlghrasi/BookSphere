@@ -22,37 +22,67 @@
 
                     <div class="card shadow mb-4">
                         <div class="card-body">
-                            <form action="#" method="post" enctype="multipart/form-data">
-                                <input type="hidden" name="id" value="">
+                            <form action="#" method="post">
+                                <input type="hidden" name="id" value="<?= isset($_GET['id']) ? intval($_GET['id']) : '' ?>">
+
+                                <?php
+                                require_once __DIR__ . '/../config/db.php';
+                                require_once __DIR__ . '/../helpers/db_queries.php';
+                                $publishers = selectQuery($conn, "SELECT publisher_id, publisher_name FROM publishers ORDER BY publisher_name");
+                                $categories = selectQuery($conn, "SELECT category_id, name FROM categories ORDER BY name");
+                                $authors = selectQuery($conn, "SELECT author_id, author_name FROM authors ORDER BY author_name");
+                                ?>
 
                                 <div class="form-group">
-                                    <label>product name</label>
-                                    <input type="text" class="form-control form-control-user" name="title" value="" placeholder="enter product name">
+                                    <label>ISBN</label>
+                                    <input type="text" class="form-control form-control-user" name="isbn" value="" placeholder="Enter ISBN">
                                 </div>
 
                                 <div class="form-group">
-                                    <label>product price</label>
-                                    <input type="text" class="form-control form-control-user" name="price" value="" placeholder="enter product price">
+                                    <label>Book name</label>
+                                    <input type="text" class="form-control form-control-user" name="book_name" value="" placeholder="Enter book name">
                                 </div>
 
                                 <div class="form-group">
-                                    <label>product image</label>
-                                    <input type="file" class="form-control-file" name="image">
+                                    <label>Price</label>
+                                    <input type="text" class="form-control form-control-user" name="price" value="" placeholder="Enter price">
                                 </div>
 
                                 <div class="form-group">
-                                    <label>product details</label>
-                                    <textarea class="form-control" rows="4" name="description" placeholder="enter product details"></textarea>
+                                    <label>Quantity</label>
+                                    <input type="number" class="form-control form-control-user" name="quantity" value="" placeholder="Enter quantity">
                                 </div>
 
                                 <div class="form-group">
-                                    <label>category</label>
-                                    <select class="form-control" name="category_id">
-                                        <option value="1">testtttttt</option>
-                                        <option value="2">testtttttt</option>
-                                        <option value="3">testtttttt</option>
-                                        <option value="4">testtttttt</option>
+                                    <label>Publisher</label>
+                                    <select class="form-control" name="publisher_id">
+                                        <?php while($pub = $publishers->fetch_assoc()): ?>
+                                            <option value="<?= $pub['publisher_id'] ?>"><?= htmlspecialchars($pub['publisher_name']) ?></option>
+                                        <?php endwhile; ?>
                                     </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Authors</label>
+                                    <select class="form-control" name="authors[]" multiple>
+                                        <?php while($a = $authors->fetch_assoc()): ?>
+                                            <option value="<?= $a['author_id'] ?>"><?= htmlspecialchars($a['author_name']) ?></option>
+                                        <?php endwhile; ?>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Categories</label>
+                                    <select class="form-control" name="categories[]" multiple>
+                                        <?php while($c = $categories->fetch_assoc()): ?>
+                                            <option value="<?= $c['category_id'] ?>"><?= htmlspecialchars($c['name']) ?></option>
+                                        <?php endwhile; ?>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Description</label>
+                                    <textarea class="form-control" rows="4" name="book_description" placeholder="Enter book description"></textarea>
                                 </div>
 
                                 <button type="submit" class="btn btn-primary">Update Now</button>

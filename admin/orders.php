@@ -54,69 +54,33 @@
                     <div class="card shadow mb-4">
                         <div class="card-body">
                             <div class="table-responsive">
+                                <?php
+                                require_once __DIR__ . '/../config/db.php';
+                                require_once __DIR__ . '/../helpers/db_queries.php';
+                                $orders = selectQuery($conn, "SELECT o.order_id, o.total_amount, o.order_status, o.created_at, u.name, u.email FROM orders o LEFT JOIN users u ON o.user_id = u.user_id ORDER BY o.order_id DESC");
+                                ?>
                                 <table class="table table-borderless table-hover">
                                     <thead>
                                         <tr>
-                                            <th>Name</th>
-                                            <th>Number</th>
-                                            <th>Email</th>
-                                            <th>Location</th>
-                                            <th>Product</th>
-                                            <th>Order Time</th>
-                                            <th>Quantity</th>
-                                            <th>Price</th>
+                                            <th>Order ID</th>
+                                            <th>User</th>
+                                            <th>Total</th>
+                                            <th>Status</th>
+                                            <th>Created At</th>
+                                            <th>Actions</th>
                                         </tr>
                                     </thead>
-                                    
                                     <tbody>
+                                        <?php while ($order = $orders->fetch_assoc()): ?>
                                         <tr>
-                                            <td>testtttttttttttt</td>
-                                            <td>testtttttttttttt</td>
-                                            <td>testtttttttttttt</td>
-                                            <td>testtttttttttttt</td>
-                                            <td>testtttttttttttt</td>
-                                            <td>testtttttttttttt</td>
-                                            <td>testtttttttttttt</td>
-                                            <td>testtttttttttttt</td>
+                                            <td><?= htmlspecialchars($order['order_id']) ?></td>
+                                            <td><?= htmlspecialchars($order['name']) ?> &lt;<?= htmlspecialchars($order['email']) ?>&gt;</td>
+                                            <td><?= htmlspecialchars($order['total_amount']) ?></td>
+                                            <td><?= htmlspecialchars($order['order_status']) ?></td>
+                                            <td><?= htmlspecialchars($order['created_at']) ?></td>
+                                            <td><a href="#" class="text-primary">View</a></td>
                                         </tr>
-                                        <tr>
-                                            <td>testtttttttttttt</td>
-                                            <td>testtttttttttttt</td>
-                                            <td>testtttttttttttt</td>
-                                            <td>testtttttttttttt</td>
-                                            <td>testtttttttttttt</td>
-                                            <td>testtttttttttttt</td>
-                                            <td>testtttttttttttt</td>
-                                            <td>testtttttttttttt</td>
-                                        </tr>
-                                        <tr>
-                                            <td>testtttttttttttt</td>
-                                            <td>testtttttttttttt</td>
-                                            <td>testtttttttttttt</td>
-                                            <td>testtttttttttttt</td>
-                                            <td>testtttttttttttt</td>
-                                            <td>testtttttttttttt</td>
-                                            <td>testtttttttttttt</td>
-                                            <td>testtttttttttttt</td>
-                                        </tr><tr>
-                                            <td>testtttttttttttt</td>
-                                            <td>testtttttttttttt</td>
-                                            <td>testtttttttttttt</td>
-                                            <td>testtttttttttttt</td>
-                                            <td>testtttttttttttt</td>
-                                            <td>testtttttttttttt</td>
-                                            <td>testtttttttttttt</td>
-                                            <td>testtttttttttttt</td>
-                                        </tr><tr>
-                                            <td>testtttttttttttt</td>
-                                            <td>testtttttttttttt</td>
-                                            <td>testtttttttttttt</td>
-                                            <td>testtttttttttttt</td>
-                                            <td>testtttttttttttt</td>
-                                            <td>testtttttttttttt</td>
-                                            <td>testtttttttttttt</td>
-                                            <td>testtttttttttttt</td>
-                                        </tr>
+                                        <?php endwhile; ?>
                                     </tbody>
                                 </table>
                             </div>

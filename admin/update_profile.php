@@ -24,9 +24,26 @@
                         <div class="card-body">
                             <form action="#" method="post">
                                 <div class="form-group">
-                                    <label>username</label>
-                                    <input type="text" class="form-control form-control-user" name="username" value="">
+                                    <label>Name</label>
+                                    <input type="text" class="form-control form-control-user" name="name" value="" required>
                                 </div>
+
+                                <div class="form-group">
+                                    <label>Email</label>
+                                    <input type="email" class="form-control form-control-user" name="email" value="" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Phone</label>
+                                    <input type="text" class="form-control form-control-user" name="phone" value="">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Address</label>
+                                    <input type="text" class="form-control form-control-user" name="address" value="">
+                                </div>
+
+                                <hr />
 
                                 <div class="form-group">
                                     <label>Current Password</label>

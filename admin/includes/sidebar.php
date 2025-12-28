@@ -39,6 +39,21 @@
                     <span>Categories</span></a>
             </li>
             <li class="nav-item">
+                <a class="nav-link" href="authors.php">
+                    <i class="fas fa-fw fa-user"></i>
+                    <span>Authors</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="publishers.php">
+                    <i class="fas fa-fw fa-building"></i>
+                    <span>Publishers</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="reviews.php">
+                    <i class="fas fa-fw fa-comment"></i>
+                    <span>Reviews</span></a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link" href="users.php">
                     <i class="fas fa-fw fa-table"></i>
                     <span>Users</span></a>

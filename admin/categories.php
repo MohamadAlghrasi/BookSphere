@@ -60,48 +60,26 @@
                                 <table class="table table-borderless table-hover">
                                     <thead>
                                         <tr>
-                                            <th>Image</th>
+                                            <th>Id</th>
                                             <th>Name</th>
-                                            <th>Add Sale</th>
-                                            <th>Remove Sale</th>
                                             <th>Edit</th>
                                             <th>Delete</th>
                                         </tr>
                                     </thead>
+<?php
+require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../helpers/db_queries.php';
+$categories = selectQuery($conn, "SELECT category_id, name FROM categories ORDER BY category_id DESC");
+?>
                                     <tbody>
+                                        <?php while ($cat = $categories->fetch_assoc()): ?>
                                         <tr>
-                                            <td style="width:90px;"><img src="assets/img/ring.png" style="width:64px;"/></td>
-                                            <td>testttt</td>
-                                            <td><a href="add_sale_category.php?sale_id_category=1" class="btn btn-success btn-sm"><i class="fas fa-plus"></i></a></td>
-                                            <td><a href="#" class="btn btn-danger btn-sm"><i class="fas fa-minus"></i></a></td>
-                                            <td><a href="update_category.php?id=1" class="text-primary"><i class="fas fa-edit fa-lg"></i></a></td>
+                                            <td><?= htmlspecialchars($cat['category_id']) ?></td>
+                                            <td><?= htmlspecialchars($cat['name']) ?></td>
+                                            <td><a href="update_category.php?id=<?= $cat['category_id'] ?>" class="text-primary"><i class="fas fa-edit fa-lg"></i></a></td>
                                             <td><a href="#" class="text-dark"><i class="fas fa-trash-alt fa-lg"></i></a></td>
                                         </tr>
-                                        <tr>
-                                            <td><img src="assets/img/necklace.png" style="width:64px;"/></td>
-                                            <td>testttt</td>
-                                            <td><a href="add_sale_category.php?sale_id_category=2" class="btn btn-success btn-sm"><i class="fas fa-plus"></i></a></td>
-                                            <td><a href="#" class="btn btn-danger btn-sm"><i class="fas fa-minus"></i></a></td>
-                                            <td><a href="update_category.php?id=2" class="text-primary"><i class="fas fa-edit fa-lg"></i></a></td>
-                                            <td><a href="#" class="text-dark"><i class="fas fa-trash-alt fa-lg"></i></a></td>
-                                        </tr>
-                                        <tr>
-                                            <td><img src="assets/img/earrings.png" style="width:64px;"/></td>
-                                            <td>testttt</td>
-                                            <td><a href="add_sale_category.php?sale_id_category=3" class="btn btn-success btn-sm"><i class="fas fa-plus"></i></a></td>
-                                            <td><a href="#" class="btn btn-danger btn-sm"><i class="fas fa-minus"></i></a></td>
-                                            <td><a href="update_category.php?id=3" class="text-primary"><i class="fas fa-edit fa-lg"></i></a></td>
-                                            <td><a href="#" class="text-dark"><i class="fas fa-trash-alt fa-lg"></i></a></td>
-                                        </tr>
-                                        <tr>
-                                            <td><img src="assets/img/bracelet.png" style="width:64px;"/></td>
-                                            <td>testttt</td>
-                                            <td><a href="add_sale_category.php?sale_id_category=4" class="btn btn-success btn-sm"><i class="fas fa-plus"></i></a></td>
-                                            <td><a href="#" class="btn btn-danger btn-sm"><i class="fas fa-minus"></i></a></td>
-                                            <td><a href="update_category.php?id=4" class="text-primary"><i class="fas fa-edit fa-lg"></i></a></td>
-                                            <td><a href="#" class="text-dark"><i class="fas fa-trash-alt fa-lg"></i></a></td>
-                                        </tr>
-                                        
+                                        <?php endwhile; ?>
                                     </tbody>
                                 </table>
                             </div>

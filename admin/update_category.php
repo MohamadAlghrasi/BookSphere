@@ -20,22 +20,12 @@
 
                     <div class="card shadow mb-4" style="max-width:720px;">
                         <div class="card-body">
-                            <form action="#" method="post" enctype="multipart/form-data">
-                                <input type="hidden" name="id" value="">
-
-                                <div class="form-group">
-                                    <label>Category Image</label>
-                                    <input type="file" class="form-control-file" name="image">
-                                </div>
+                            <form action="#" method="post">
+                                <input type="hidden" name="id" value="<?= isset($_GET['id']) ? intval($_GET['id']) : '' ?>">
 
                                 <div class="form-group">
                                     <label>Category Name</label>
-                                    <input type="text" class="form-control" name="name" value="......">
-                                </div>
-
-                                <div class="form-group">
-                                    <label>Discount %</label>
-                                    <input type="number" class="form-control" name="discount" placeholder="Enter Discount Percentage">
+                                    <input type="text" class="form-control" name="name" value="" required>
                                 </div>
 
                                 <button type="submit" class="btn btn-primary">Update</button>

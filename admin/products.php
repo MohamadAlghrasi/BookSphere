@@ -62,69 +62,40 @@
                                         <tr>
                                             <th>Id</th>
                                             <th>Image</th>
-                                            <th>Description</th>
                                             <th>Name</th>
+                                            <th>Description</th>
                                             <th>Price</th>
-                                            <th>Discount</th>
-                                            <th>Add Sale</th>
-                                            <th>Remove Sale</th>
-                                            <th>Category</th>
+                                            <th>Quantity</th>
+                                            <th>Publisher</th>
                                             <th>Edit</th>
                                             <th>Delete</th>
                                         </tr>
                                     </thead>
 
+<?php
+require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../helpers/db_queries.php';
+$sql = "SELECT b.book_id, b.book_name, b.book_description, b.price, b.quantity, p.publisher_name, i.image_path
+        FROM books b
+        LEFT JOIN publishers p ON b.publisher_id = p.publisher_id
+        LEFT JOIN images i ON i.book_id = b.book_id AND i.is_main = 1
+        ORDER BY b.book_id DESC";
+$books = selectQuery($conn, $sql);
+?>
                                     <tbody>
+                                        <?php while ($book = $books->fetch_assoc()): ?>
                                         <tr>
-                                            <td>00</td>
-                                            <td style="width:70px;"><img src="" alt="" style="width:48px;"/></td>
-                                            <td style="max-width:240px;">testtttttt</td>
-                                            <td>testtttttt</td>
-                                            <td>JD0</td>
-                                            <td>JD0</td>
-                                            <td><a href="add_sale.php" class="btn btn-success btn-sm"><i class="fas fa-plus"></i></a></td>
-                                            <td><a href="#" class="btn btn-danger btn-sm"><i class="fas fa-minus"></i></a></td>
-                                            <td>BRACELETS</td>
-                                            <td><a href="update_product.php" class="text-primary"><i class="fas fa-edit fa-lg"></i></a></td>
+                                            <td><?= htmlspecialchars($book['book_id']) ?></td>
+                                            <td style="width:70px;"><img src="<?= !empty($book['image_path']) ? htmlspecialchars($book['image_path']) : 'assets/img/placeholder.png' ?>" alt="" style="width:48px;"/></td>
+                                            <td><?= htmlspecialchars($book['book_name']) ?></td>
+                                            <td style="max-width:240px;"><?= htmlspecialchars(substr($book['book_description'],0,120)) ?></td>
+                                            <td><?= htmlspecialchars($book['price']) ?></td>
+                                            <td><?= htmlspecialchars($book['quantity']) ?></td>
+                                            <td><?= htmlspecialchars($book['publisher_name']) ?></td>
+                                            <td><a href="update_product.php?id=<?= $book['book_id'] ?>" class="text-primary"><i class="fas fa-edit fa-lg"></i></a></td>
                                             <td><a href="#" class="text-dark"><i class="fas fa-trash-alt fa-lg"></i></a></td>
                                         </tr>
-                                        <tr>
-                                            <td>00</td>
-                                            <td style="width:70px;"><img src="" alt="" style="width:48px;"/></td>
-                                            <td style="max-width:240px;">testtttttt</td>
-                                            <td>testtttttt</td>
-                                            <td>JD0</td>
-                                            <td>JD0</td>
-                                            <td><a href="add_sale.php" class="btn btn-success btn-sm"><i class="fas fa-plus"></i></a></td>
-                                            <td><a href="#" class="btn btn-danger btn-sm"><i class="fas fa-minus"></i></a></td>
-                                            <td>BRACELETS</td>
-                                            <td><a href="update_product.php" class="text-primary"><i class="fas fa-edit fa-lg"></i></a></td>
-                                            <td><a href="#" class="text-dark"><i class="fas fa-trash-alt fa-lg"></i></a></td>
-                                        </tr><tr>
-                                            <td>00</td>
-                                            <td style="width:70px;"><img src="" alt="" style="width:48px;"/></td>
-                                            <td style="max-width:240px;">testtttttt</td>
-                                            <td>testtttttt</td>
-                                            <td>JD0</td>
-                                            <td>JD0</td>
-                                            <td><a href="add_sale.php" class="btn btn-success btn-sm"><i class="fas fa-plus"></i></a></td>
-                                            <td><a href="#" class="btn btn-danger btn-sm"><i class="fas fa-minus"></i></a></td>
-                                            <td>BRACELETS</td>
-                                            <td><a href="update_product.php" class="text-primary"><i class="fas fa-edit fa-lg"></i></a></td>
-                                            <td><a href="#" class="text-dark"><i class="fas fa-trash-alt fa-lg"></i></a></td>
-                                        </tr><tr>
-                                            <td>00</td>
-                                            <td style="width:70px;"><img src="" alt="" style="width:48px;"/></td>
-                                            <td style="max-width:240px;">testtttttt</td>
-                                            <td>testtttttt</td>
-                                            <td>JD0</td>
-                                            <td>JD0</td>
-                                            <td><a href="add_sale.php" class="btn btn-success btn-sm"><i class="fas fa-plus"></i></a></td>
-                                            <td><a href="#" class="btn btn-danger btn-sm"><i class="fas fa-minus"></i></a></td>
-                                            <td>testtttttt</td>
-                                            <td><a href="update_product.php" class="text-primary"><i class="fas fa-edit fa-lg"></i></a></td>
-                                            <td><a href="#" class="text-dark"><i class="fas fa-trash-alt fa-lg"></i></a></td>
-                                        </tr>
+                                        <?php endwhile; ?>
                                     </tbody>
                                 </table>
                             </div>

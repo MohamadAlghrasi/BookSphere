@@ -50,9 +50,9 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <?php while ($p = $pubs->fetch_assoc()): ?>
+                                        <?php $c =1; while ($p = $pubs->fetch_assoc()): ?>
                                         <tr>
-                                            <td><?= htmlspecialchars($p['publisher_id']) ?></td>
+                                            <td><?=$c++?></td>
                                             <td><?= htmlspecialchars($p['publisher_name']) ?></td>
                                             <td><a href="#" class="text-primary"><i class="fas fa-edit fa-lg"></i></a></td>
                                             <td><a href="#" class="text-dark"><i class="fas fa-trash-alt fa-lg"></i></a></td>

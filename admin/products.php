@@ -83,9 +83,10 @@ $sql = "SELECT b.book_id, b.book_name, b.book_description, b.price, b.quantity, 
 $books = selectQuery($conn, $sql);
 ?>
                                     <tbody>
-                                        <?php while ($book = $books->fetch_assoc()): ?>
+                                        <?php $c = 1;  while ($book = $books->fetch_assoc()):
+                                            ?>
                                         <tr>
-                                            <td><?= htmlspecialchars($book['book_id']) ?></td>
+                                            <td><?=$c++?></td>
                                             <td style="width:70px;"><img src="<?= !empty($book['image_path']) ? htmlspecialchars($book['image_path']) : 'assets/img/placeholder.png' ?>" alt="" style="width:48px;"/></td>
                                             <td><?= htmlspecialchars($book['book_name']) ?></td>
                                             <td style="max-width:240px;"><?= htmlspecialchars(substr($book['book_description'],0,120)) ?></td>

@@ -66,15 +66,15 @@
                                             <th>Delete</th>
                                         </tr>
                                     </thead>
-<?php
-require_once __DIR__ . '/../config/db.php';
-require_once __DIR__ . '/../helpers/db_queries.php';
-$categories = selectQuery($conn, "SELECT category_id, name FROM categories ORDER BY category_id DESC");
-?>
+                                    <?php
+                                    require_once __DIR__ . '/../config/db.php';
+                                    require_once __DIR__ . '/../helpers/db_queries.php';
+                                    $categories = selectQuery($conn, "SELECT category_id, name FROM categories ORDER BY category_id DESC");
+                                    ?>
                                     <tbody>
-                                        <?php while ($cat = $categories->fetch_assoc()): ?>
+                                        <?php $c=1; while ($cat = $categories->fetch_assoc()): ?>
                                         <tr>
-                                            <td><?= htmlspecialchars($cat['category_id']) ?></td>
+                                            <td><?=$c++?></td>
                                             <td><?= htmlspecialchars($cat['name']) ?></td>
                                             <td><a href="update_category.php?id=<?= $cat['category_id'] ?>" class="text-primary"><i class="fas fa-edit fa-lg"></i></a></td>
                                             <td><a href="#" class="text-dark"><i class="fas fa-trash-alt fa-lg"></i></a></td>

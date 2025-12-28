@@ -52,9 +52,6 @@
 
                     <!-- DataTales Example -->
                     <div class="card shadow mb-4">
-                        <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">DataTables Example</h6>
-                        </div>
                         <div class="card-body">
                             <div class="table-responsive">
                                 <table class="table table-borderless table-hover">
@@ -63,22 +60,27 @@
                                             <th>User id</th>
                                             <th>User Name</th>
                                             <th>Email</th>
+                                            <th>Role</th>
                                             <th>Delete</th>
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        <?php require_once 'assets/database/Database.php';
+                                         $db =Database::getInstance();
+                                                $sql = "SELECT name, email, role FROM users";
+                                                $users = $db->query($sql);
+                                        ?>
                                         <tr>
-                                            <td>00</td>
-                                            <td>testtttttt</td>
-                                            <td>testtttttt@gmail.com</td>
+                                        <?php $c=1; while ($u = $users->fetch()): ?>
+                                        <tr>
+                                            <td><?=$c++?></td>
+                                            <td><?= htmlspecialchars($u['name']) ?></td>
+                                            <td><?= htmlspecialchars($u['email']) ?></td>
+                                            <td><?= htmlspecialchars($u['role']) ?></td>
                                             <td><a href="#" class="text-primary"><i class="fas fa-trash-alt fa-lg"></i></a></td>
                                         </tr>
-                                        <tr>
-                                            <td>00</td>
-                                            <td>testtttttt</td>
-                                            <td>testtttttt@gmail.com</td>
-                                            <td><a href="#" class="text-primary"><i class="fas fa-trash-alt fa-lg"></i></a></td>
-                                        </tr>
+                                        <?php endwhile; ?>
+                                        
                                     </tbody>
                                 </table>
                             </div>

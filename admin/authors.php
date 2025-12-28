@@ -51,9 +51,9 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <?php while ($a = $authors->fetch_assoc()): ?>
+                                        <?php $c=1; while ($a = $authors->fetch_assoc()): ?>
                                         <tr>
-                                            <td><?= htmlspecialchars($a['author_id']) ?></td>
+                                            <td><?=$c++?></td>
                                             <td><?= htmlspecialchars($a['author_name']) ?></td>
                                             <td><?= htmlspecialchars(substr($a['author_description'],0,120)) ?></td>
                                             <td><a href="#" class="text-primary"><i class="fas fa-edit fa-lg"></i></a></td>

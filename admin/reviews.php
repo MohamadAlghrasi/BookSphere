@@ -76,9 +76,9 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <?php while ($rev = $reviews->fetch_assoc()): ?>
+                                        <?php $c=1; while ($rev = $reviews->fetch_assoc()): ?>
                                         <tr>
-                                            <td><?= htmlspecialchars($rev['review_id']) ?></td>
+                                            <td><?= $c++; ?></td>
                                             <td><?= htmlspecialchars($rev['user_name']) ?></td>
                                             <td><?= htmlspecialchars($rev['book_name']) ?></td>
                                             <td><?= htmlspecialchars($rev['rating']) ?></td>

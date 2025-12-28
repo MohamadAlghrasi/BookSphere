@@ -57,28 +57,29 @@
                                 <?php
                                 require_once __DIR__ . '/../config/db.php';
                                 require_once __DIR__ . '/../helpers/db_queries.php';
-                                $orders = selectQuery($conn, "SELECT o.order_id, o.total_amount, o.order_status, o.created_at, u.name, u.email FROM orders o LEFT JOIN users u ON o.user_id = u.user_id ORDER BY o.order_id DESC");
+                                $orders = selectQuery($conn, "SELECT o.order_id, o.created_at, u.name, u.email, u.phone, u.address FROM orders o LEFT JOIN users u ON o.user_id = u.user_id ORDER BY o.order_id DESC");
                                 ?>
                                 <table class="table table-borderless table-hover">
                                     <thead>
                                         <tr>
                                             <th>Order ID</th>
-                                            <th>User</th>
-                                            <th>Total</th>
-                                            <th>Status</th>
+                                            <th>name</th>
+                                            <th>Email</th>
+                                            <th>Phone</th>
+                                            <th>Address</th>
                                             <th>Created At</th>
-                                            <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <?php while ($order = $orders->fetch_assoc()): ?>
+                                        <?php $c=1; while ($order = $orders->fetch_assoc()): // $orders declared above 
+                                             ?>
                                         <tr>
-                                            <td><?= htmlspecialchars($order['order_id']) ?></td>
-                                            <td><?= htmlspecialchars($order['name']) ?> &lt;<?= htmlspecialchars($order['email']) ?>&gt;</td>
-                                            <td><?= htmlspecialchars($order['total_amount']) ?></td>
-                                            <td><?= htmlspecialchars($order['order_status']) ?></td>
+                                            <td><?=$c++?></td>
+                                            <td><?= htmlspecialchars($order['name']) ?> </td>
+                                            <td><?= htmlspecialchars(string: $order['email']) ?></td>
+                                            <td><?= htmlspecialchars(string: $order['phone']) ?></td>
+                                            <td><?= htmlspecialchars(string: $order['address']) ?></td>
                                             <td><?= htmlspecialchars($order['created_at']) ?></td>
-                                            <td><a href="#" class="text-primary">View</a></td>
                                         </tr>
                                         <?php endwhile; ?>
                                     </tbody>

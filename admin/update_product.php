@@ -1,4 +1,7 @@
 <?php
+require_once 'includes/check_login.php';
+?>
+<?php
 require_once 'assets/database/Database.php';
 
 

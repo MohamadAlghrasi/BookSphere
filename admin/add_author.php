@@ -1,5 +1,10 @@
+<?php
+
+require_once 'includes/check_login.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -8,6 +13,7 @@
     <link href="assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link href="assets/css/sb-admin-2.min.css" rel="stylesheet">
 </head>
+
 <body id="page-top">
     <div id="wrapper">
         <?php include 'includes/sidebar.php'; ?>
@@ -44,4 +50,5 @@
     </div>
     <?php include 'includes/scripts.php'; ?>
 </body>
+
 </html>

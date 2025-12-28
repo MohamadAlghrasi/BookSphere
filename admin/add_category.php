@@ -1,4 +1,5 @@
 <?php
+require_once 'includes/check_login.php';
 require_once 'assets/database/Database.php';
 
 $db = Database::getInstance();

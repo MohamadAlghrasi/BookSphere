@@ -1,3 +1,6 @@
+<?php
+require_once 'includes/check_login.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -66,21 +69,22 @@
                                     </thead>
                                     <tbody>
                                         <?php require_once 'assets/database/Database.php';
-                                         $db =Database::getInstance();
-                                                $sql = "SELECT name, email, role FROM users";
-                                                $users = $db->query($sql);
+                                        $db = Database::getInstance();
+                                        $sql = "SELECT name, email, role FROM users";
+                                        $users = $db->query($sql);
                                         ?>
                                         <tr>
-                                        <?php $c=1; while ($u = $users->fetch()): ?>
+                                            <?php $c = 1;
+                                            while ($u = $users->fetch()): ?>
                                         <tr>
-                                            <td><?=$c++?></td>
+                                            <td><?= $c++ ?></td>
                                             <td><?= htmlspecialchars($u['name']) ?></td>
                                             <td><?= htmlspecialchars($u['email']) ?></td>
                                             <td><?= htmlspecialchars($u['role']) ?></td>
                                             <td><a href="#" class="text-primary"><i class="fas fa-trash-alt fa-lg"></i></a></td>
                                         </tr>
-                                        <?php endwhile; ?>
-                                        
+                                    <?php endwhile; ?>
+
                                     </tbody>
                                 </table>
                             </div>
@@ -93,8 +97,8 @@
             </div>
             <!-- End of Main Content -->
 
-                       <!-- Footer -->
-                <?php include 'includes/footer.php'; ?>
+            <!-- Footer -->
+            <?php include 'includes/footer.php'; ?>
             <!-- End of Footer -->
 
         </div>
@@ -102,9 +106,9 @@
 
     </div>
     <!-- End of Page Wrapper -->
-                <!-- scripts -->
-                <?php include 'includes/scripts.php'; ?>
-                <!-- End of scripts -->
+    <!-- scripts -->
+    <?php include 'includes/scripts.php'; ?>
+    <!-- End of scripts -->
 
 </body>
 

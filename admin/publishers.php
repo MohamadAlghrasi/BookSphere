@@ -1,3 +1,6 @@
+<?php
+require_once 'includes/check_login.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 

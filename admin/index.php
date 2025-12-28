@@ -1,3 +1,6 @@
+<?php
+require_once 'includes/check_login.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -375,17 +378,17 @@
             <!-- End of Main Content -->
 
             <!-- Footer -->
-                <?php include 'includes/footer.php'; ?>
+            <?php include 'includes/footer.php'; ?>
             <!-- End of Footer -->
 
         </div>
-<!-- End of Content Wrapper -->
+        <!-- End of Content Wrapper -->
 
     </div>
     <!-- End of Page Wrapper -->
-                <!-- scripts -->
-                <?php include 'includes/scripts.php'; ?>
-                <!-- End of scripts -->
+    <!-- scripts -->
+    <?php include 'includes/scripts.php'; ?>
+    <!-- End of scripts -->
 
 </body>
 

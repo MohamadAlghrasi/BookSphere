@@ -1,31 +1,49 @@
+<?php
+session_start();
+require_once __DIR__ . '/../helpers/db_queries.php';
+
+// Check if user is logged in
+$isLoggedIn = isset($_SESSION['user_id']);
+$userName = $isLoggedIn ? $_SESSION['user_name'] ?? 'User' : 'Guest';
+
+// Get books
+$sqlBooks = "SELECT b.book_id, b.book_name, b.price, b.stock, 
+             a.author_name, c.name as category_name, i.image_path,
+             COALESCE(AVG(r.rating), 0) as avg_rating,
+             COUNT(r.review_id) as review_count
+             FROM Books b
+             LEFT JOIN Book_Author ba ON b.book_id = ba.book_id 
+             LEFT JOIN Authors a ON a.author_id = ba.author_id
+             LEFT JOIN Book_Category bc ON b.book_id = bc.book_id
+             LEFT JOIN Categories c ON c.category_id = bc.category_id
+             LEFT JOIN Images i ON b.book_id = i.book_id AND i.is_main = 1
+             LEFT JOIN Reviews r ON b.book_id = r.book_id
+             GROUP BY b.book_id
+             ORDER BY b.book_id DESC
+             LIMIT 8";
+
+$resultBooks = selectQuery($conn, $sqlBooks);
+
+?>
 <!DOCTYPE html>
-<html class="no-js" lang="zxx">
+<html class="no-js" lang="en">
 
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
-    <title>BookShpere</title>
-    <meta name="description" content="" />
+    <title>BookSphere - Your Online Bookstore</title>
+    <meta name="description" content="Discover your next favorite book at BookSphere" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="shortcut icon" type="image/x-icon" href="assets/images/favicon.svg" />
 
-    <!-- ========================= CSS here ========================= -->
     <link rel="stylesheet" href="assets/css/bootstrap.min.css" />
     <link rel="stylesheet" href="assets/css/LineIcons.3.0.css" />
     <link rel="stylesheet" href="assets/css/tiny-slider.css" />
     <link rel="stylesheet" href="assets/css/glightbox.min.css" />
     <link rel="stylesheet" href="assets/css/main.css" />
-
 </head>
 
 <body>
-    <!--[if lte IE 9]>
-      <p class="browserupgrade">
-        You are using an <strong>outdated</strong> browser. Please
-        <a href="https://browsehappy.com/">upgrade your browser</a> to improve
-        your experience and security.
-      </p>
-    <![endif]-->
 
     <!-- Preloader -->
     <div class="preloader">
@@ -36,7 +54,6 @@
             </div>
         </div>
     </div>
-    <!-- /End Preloader -->
 
     <!-- Start Header Area -->
     <header class="header navbar-area">
@@ -63,711 +80,317 @@
                 </div>
             </div>
         </div>
-        <!-- End Topbar -->
-        <!-- Start Header Middle -->
-        <div class="header-middle">
-            <div class="container">
-                <div class="row align-items-center">
-                    <div class="col-lg-3 col-md-3 col-7">
-                        <!-- Start Header Logo -->
-                        <a class="navbar-brand" href="index.html">
-                            <img src="assets/images/logo/logo.svg" alt="Logo">
-                        </a>
-                        <!-- End Header Logo -->
-                    </div>
-                    <div class="col-lg-5 col-md-7 d-xs-none">
-                        <!-- Start Main Menu Search -->
-                        <div class="main-menu-search">
-                            <!-- navbar search start -->
-                            <div class="navbar-search search-style-5">
-                                <div class="search-select">
-                                    <div class="select-position">
-                                        <select id="select1">
-                                            <option selected>All</option>
-                                            <option value="1">option 01</option>
-                                            <option value="2">option 02</option>
-                                            <option value="3">option 03</option>
-                                            <option value="4">option 04</option>
-                                            <option value="5">option 05</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="search-input">
-                                    <input type="text" placeholder="Search">
-                                </div>
-                                <div class="search-btn">
-                                    <button><i class="lni lni-search-alt"></i></button>
-                                </div>
-                            </div>
-                            <!-- navbar search Ends -->
-                        </div>
-                        <!-- End Main Menu Search -->
-                    </div>
-                    <div class="col-lg-4 col-md-2 col-5">
-                        <div class="middle-right-area">
-                            <div class="navbar-cart">
-                                <div class="wishlist">
-                                    <a href="javascript:void(0)">
-                                        <i class="lni lni-heart"></i>
-                                        <span class="total-items">0</span>
-                                    </a>
-                                </div>
-                                <div class="cart-items">
-                                    <a href="javascript:void(0)" class="main-btn">
-                                        <i class="lni lni-cart"></i>
-                                        <span class="total-items">2</span>
-                                    </a>
-                                    <!-- Shopping Item -->
-                                    <div class="shopping-item">
-                                        <div class="dropdown-cart-header">
-                                            <span>2 Items</span>
-                                            <a href="cart.html">View Cart</a>
-                                        </div>
-                                        <ul class="shopping-list">
-                                            <li>
-                                                <a href="javascript:void(0)" class="remove" title="Remove this item"><i
-                                                        class="lni lni-close"></i></a>
-                                                <div class="cart-img-head">
-                                                    <a class="cart-img" href="product-details.html"><img
-                                                            src="assets/images/header/cart-items/item1.jpg" alt="#"></a>
-                                                </div>
 
-                                                <div class="content">
-                                                    <h4><a href="product-details.html">
-                                                            Apple Watch Series 6</a></h4>
-                                                    <p class="quantity">1x - <span class="amount">$99.00</span></p>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <a href="javascript:void(0)" class="remove" title="Remove this item"><i
-                                                        class="lni lni-close"></i></a>
-                                                <div class="cart-img-head">
-                                                    <a class="cart-img" href="product-details.html"><img
-                                                            src="assets/images/header/cart-items/item2.jpg" alt="#"></a>
-                                                </div>
-                                                <div class="content">
-                                                    <h4><a href="product-details.html">Wi-Fi Smart Camera</a></h4>
-                                                    <p class="quantity">1x - <span class="amount">$35.00</span></p>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                        <div class="bottom">
-                                            <div class="total">
-                                                <span>Total</span>
-                                                <span class="total-amount">$134.00</span>
-                                            </div>
-                                            <div class="button">
-                                                <a href="checkout.html" class="btn animate">Checkout</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!--/ End Shopping Item -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- End Header Middle -->
-        <!-- Start Header Bottom -->
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-8 col-md-6 col-12">
-                    <div class="nav-inner">
-                        <!-- Start Mega Category Menu -->
-                        <div class="mega-category-menu">
-                            <span class="cat-button"><i class="lni lni-menu"></i>All Categories</span>
-                            <ul class="sub-category">
-                                <li><a href="product-grids.html">Electronics <i class="lni lni-chevron-right"></i></a>
-                                    <ul class="inner-sub-category">
-                                        <li><a href="product-grids.html">Digital Cameras</a></li>
-                                        <li><a href="product-grids.html">Camcorders</a></li>
-                                        <li><a href="product-grids.html">Camera Drones</a></li>
-                                        <li><a href="product-grids.html">Smart Watches</a></li>
-                                        <li><a href="product-grids.html">Headphones</a></li>
-                                        <li><a href="product-grids.html">MP3 Players</a></li>
-                                        <li><a href="product-grids.html">Microphones</a></li>
-                                        <li><a href="product-grids.html">Chargers</a></li>
-                                        <li><a href="product-grids.html">Batteries</a></li>
-                                        <li><a href="product-grids.html">Cables & Adapters</a></li>
-                                    </ul>
-                                </li>
-                                <li><a href="product-grids.html">accessories</a></li>
-                                <li><a href="product-grids.html">Televisions</a></li>
-                                <li><a href="product-grids.html">best selling</a></li>
-                                <li><a href="product-grids.html">top 100 offer</a></li>
-                                <li><a href="product-grids.html">sunglass</a></li>
-                                <li><a href="product-grids.html">watch</a></li>
-                                <li><a href="product-grids.html">man’s product</a></li>
-                                <li><a href="product-grids.html">Home Audio & Theater</a></li>
-                                <li><a href="product-grids.html">Computers & Tablets </a></li>
-                                <li><a href="product-grids.html">Video Games </a></li>
-                                <li><a href="product-grids.html">Home Appliances </a></li>
-                            </ul>
-                        </div>
-                        <!-- End Mega Category Menu -->
-                        <!-- Start Navbar -->
-                        <nav class="navbar navbar-expand-lg">
-                            <button class="navbar-toggler mobile-menu-btn" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                                aria-expanded="false" aria-label="Toggle navigation">
-                                <span class="toggler-icon"></span>
-                                <span class="toggler-icon"></span>
-                                <span class="toggler-icon"></span>
-                            </button>
-                            <div class="collapse navbar-collapse sub-menu-bar" id="navbarSupportedContent">
-                                <ul id="nav" class="navbar-nav ms-auto">
-                                    <li class="nav-item">
-                                        <a href="index.php" class="active" aria-label="Toggle navigation">Home</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="dd-menu collapsed" href="javascript:void(0)" data-bs-toggle="collapse"
-                                            data-bs-target="#submenu-1-2" aria-controls="navbarSupportedContent"
-                                            aria-expanded="false" aria-label="Toggle navigation">Pages</a>
-                                        <ul class="sub-menu collapse" id="submenu-1-2">
-                                            <li class="nav-item"><a href="about-us.html">About Us</a></li>
-                                            <li class="nav-item"><a href="faq.html">Faq</a></li>
-                                            <li class="nav-item"><a href="login.html">Login</a></li>
-                                            <li class="nav-item"><a href="register.html">Register</a></li>
-                                            <li class="nav-item"><a href="mail-success.html">Mail Success</a></li>
-                                            <li class="nav-item"><a href="404.html">404 Error</a></li>
-                                        </ul>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="dd-menu collapsed" href="javascript:void(0)" data-bs-toggle="collapse"
-                                            data-bs-target="#submenu-1-3" aria-controls="navbarSupportedContent"
-                                            aria-expanded="false" aria-label="Toggle navigation">Shop</a>
-                                        <ul class="sub-menu collapse" id="submenu-1-3">
-                                            <li class="nav-item"><a href="product-grids.html">Shop Grid</a></li>
-                                            <li class="nav-item"><a href="product-list.html">Shop List</a></li>
-                                            <li class="nav-item"><a href="product-details.html">shop Single</a></li>
-                                            <li class="nav-item"><a href="cart.html">Cart</a></li>
-                                            <li class="nav-item"><a href="checkout.html">Checkout</a></li>
-                                        </ul>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="dd-menu collapsed" href="javascript:void(0)" data-bs-toggle="collapse"
-                                            data-bs-target="#submenu-1-4" aria-controls="navbarSupportedContent"
-                                            aria-expanded="false" aria-label="Toggle navigation">Blog</a>
-                                        <ul class="sub-menu collapse" id="submenu-1-4">
-                                            <li class="nav-item"><a href="blog-grid-sidebar.html">Blog Grid Sidebar</a>
-                                            </li>
-                                            <li class="nav-item"><a href="blog-single.html">Blog Single</a></li>
-                                            <li class="nav-item"><a href="blog-single-sidebar.html">Blog Single
-                                                    Sibebar</a></li>
-                                        </ul>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a href="contact.html" aria-label="Toggle navigation">Contact Us</a>
-                                    </li>
-                                </ul>
-                            </div> <!-- navbar collapse -->
-                        </nav>
-                        <!-- End Navbar -->
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- End Header Bottom -->
     </header>
-    <!-- End Header Area -->
 
-    <!-- Start Hero Area (Full Width) -->
+    <!-- Start Hero Slider Area -->
     <section class="hero-area hero-area-full">
         <div class="container-fluid px-0">
             <div class="slider-head">
                 <div class="hero-slider">
 
                     <!-- Slide 1 -->
-                    <div class="single-slider"
-                        style="background-image: url(assets/images/hero/slider-bg1.jpg);">
+                    <div class="single-slider" style="background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=1920&h=600&fit=crop') center/cover no-repeat; min-height: 600px;">
                         <div class="content container">
-                            <h2>Discover Your Next Favorite Book</h2>
-                            <p>Browse bestselling titles, new releases, and curated picks.</p>
-                            <div class="button">
-                                <a href="product-grids.html" class="btn">Shop Now</a>
+                            <div class="row justify-content-center">
+                                <div class="col-lg-8 text-center">
+                                    <h2 class="text-white" style="font-size: 3.5rem; font-weight: 700; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">
+                                        Discover Your Next <span style="color: #ffd700;">Favorite Book</span>
+                                    </h2>
+                                    <p class="text-white mb-4" style="font-size: 1.3rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">
+                                        Browse bestselling titles, new releases, and curated picks
+                                    </p>
+                                    <div class="button">
+                                        <a href="<?= $isLoggedIn ? 'shop.php' : 'login.php' ?>" class="btn btn-light btn-lg px-5 py-3" style="border-radius: 50px; font-weight: 600;">
+                                            <i class="lni lni-book me-2"></i> Shop Now
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Slide 2 -->
-                    <div class="single-slider"
-                        style="background-image: url(assets/images/hero/slider-bg2.jpg);">
+                    <div class="single-slider" style="background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=1920&h=600&fit=crop') center/cover no-repeat; min-height: 600px;">
                         <div class="content container">
-                            <h2>New Arrivals Every Week</h2>
-                            <p>Fresh books added regularly — don’t miss out.</p>
-                            <div class="button">
-                                <a href="product-grids.html" class="btn">Explore</a>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- End Hero Area -->
-
-
-    <!-- Start Trending Product Area -->
-    <section class="trending-product section" style="margin-top: 12px;">
-        <div class="container">
-            <div class="row">
-                <div class="col-12">
-                    <div class="section-title">
-                        <h2>Trending Product</h2>
-                        <p>There are many variations of passages of Lorem Ipsum available, but the majority have
-                            suffered alteration in some form.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-3 col-md-6 col-12">
-                    <!-- Start Single Product -->
-                    <div class="single-product">
-                        <div class="product-image">
-                            <img src="assets/images/products/product-1.jpg" alt="#">
-                            <div class="button">
-                                <a href="product-details.html" class="btn"><i class="lni lni-cart"></i> Add to Cart</a>
-                            </div>
-                        </div>
-                        <div class="product-info">
-                            <span class="category">Watches</span>
-                            <h4 class="title">
-                                <a href="product-grids.html">Xiaomi Mi Band 5</a>
-                            </h4>
-                            <ul class="review">
-                                <li><i class="lni lni-star-filled"></i></li>
-                                <li><i class="lni lni-star-filled"></i></li>
-                                <li><i class="lni lni-star-filled"></i></li>
-                                <li><i class="lni lni-star-filled"></i></li>
-                                <li><i class="lni lni-star"></i></li>
-                                <li><span>4.0 Review(s)</span></li>
-                            </ul>
-                            <div class="price">
-                                <span>$199.00</span>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- End Single Product -->
-                </div>
-                <div class="col-lg-3 col-md-6 col-12">
-                    <!-- Start Single Product -->
-                    <div class="single-product">
-                        <div class="product-image">
-                            <img src="assets/images/products/product-2.jpg" alt="#">
-                            <span class="sale-tag">-25%</span>
-                            <div class="button">
-                                <a href="product-details.html" class="btn"><i class="lni lni-cart"></i> Add to Cart</a>
-                            </div>
-                        </div>
-                        <div class="product-info">
-                            <span class="category">Speaker</span>
-                            <h4 class="title">
-                                <a href="product-grids.html">Big Power Sound Speaker</a>
-                            </h4>
-                            <ul class="review">
-                                <li><i class="lni lni-star-filled"></i></li>
-                                <li><i class="lni lni-star-filled"></i></li>
-                                <li><i class="lni lni-star-filled"></i></li>
-                                <li><i class="lni lni-star-filled"></i></li>
-                                <li><i class="lni lni-star-filled"></i></li>
-                                <li><span>5.0 Review(s)</span></li>
-                            </ul>
-                            <div class="price">
-                                <span>$275.00</span>
-                                <span class="discount-price">$300.00</span>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- End Single Product -->
-                </div>
-                <div class="col-lg-3 col-md-6 col-12">
-                    <!-- Start Single Product -->
-                    <div class="single-product">
-                        <div class="product-image">
-                            <img src="assets/images/products/product-3.jpg" alt="#">
-                            <div class="button">
-                                <a href="product-details.html" class="btn"><i class="lni lni-cart"></i> Add to Cart</a>
-                            </div>
-                        </div>
-                        <div class="product-info">
-                            <span class="category">Camera</span>
-                            <h4 class="title">
-                                <a href="product-grids.html">WiFi Security Camera</a>
-                            </h4>
-                            <ul class="review">
-                                <li><i class="lni lni-star-filled"></i></li>
-                                <li><i class="lni lni-star-filled"></i></li>
-                                <li><i class="lni lni-star-filled"></i></li>
-                                <li><i class="lni lni-star-filled"></i></li>
-                                <li><i class="lni lni-star-filled"></i></li>
-                                <li><span>5.0 Review(s)</span></li>
-                            </ul>
-                            <div class="price">
-                                <span>$399.00</span>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- End Single Product -->
-                </div>
-                <div class="col-lg-3 col-md-6 col-12">
-                    <!-- Start Single Product -->
-                    <div class="single-product">
-                        <div class="product-image">
-                            <img src="assets/images/products/product-4.jpg" alt="#">
-                            <span class="new-tag">New</span>
-                            <div class="button">
-                                <a href="product-details.html" class="btn"><i class="lni lni-cart"></i> Add to Cart</a>
-                            </div>
-                        </div>
-                        <div class="product-info">
-                            <span class="category">Phones</span>
-                            <h4 class="title">
-                                <a href="product-grids.html">iphone 6x plus</a>
-                            </h4>
-                            <ul class="review">
-                                <li><i class="lni lni-star-filled"></i></li>
-                                <li><i class="lni lni-star-filled"></i></li>
-                                <li><i class="lni lni-star-filled"></i></li>
-                                <li><i class="lni lni-star-filled"></i></li>
-                                <li><i class="lni lni-star-filled"></i></li>
-                                <li><span>5.0 Review(s)</span></li>
-                            </ul>
-                            <div class="price">
-                                <span>$400.00</span>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- End Single Product -->
-                </div>
-                <div class="col-lg-3 col-md-6 col-12">
-                    <!-- Start Single Product -->
-                    <div class="single-product">
-                        <div class="product-image">
-                            <img src="assets/images/products/product-5.jpg" alt="#">
-                            <div class="button">
-                                <a href="product-details.html" class="btn"><i class="lni lni-cart"></i> Add to Cart</a>
-                            </div>
-                        </div>
-                        <div class="product-info">
-                            <span class="category">Headphones</span>
-                            <h4 class="title">
-                                <a href="product-grids.html">Wireless Headphones</a>
-                            </h4>
-                            <ul class="review">
-                                <li><i class="lni lni-star-filled"></i></li>
-                                <li><i class="lni lni-star-filled"></i></li>
-                                <li><i class="lni lni-star-filled"></i></li>
-                                <li><i class="lni lni-star-filled"></i></li>
-                                <li><i class="lni lni-star-filled"></i></li>
-                                <li><span>5.0 Review(s)</span></li>
-                            </ul>
-                            <div class="price">
-                                <span>$350.00</span>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- End Single Product -->
-                </div>
-                <div class="col-lg-3 col-md-6 col-12">
-                    <!-- Start Single Product -->
-                    <div class="single-product">
-                        <div class="product-image">
-                            <img src="assets/images/products/product-6.jpg" alt="#">
-                            <div class="button">
-                                <a href="product-details.html" class="btn"><i class="lni lni-cart"></i> Add to Cart</a>
-                            </div>
-                        </div>
-                        <div class="product-info">
-                            <span class="category">Speaker</span>
-                            <h4 class="title">
-                                <a href="product-grids.html">Mini Bluetooth Speaker</a>
-                            </h4>
-                            <ul class="review">
-                                <li><i class="lni lni-star-filled"></i></li>
-                                <li><i class="lni lni-star-filled"></i></li>
-                                <li><i class="lni lni-star-filled"></i></li>
-                                <li><i class="lni lni-star-filled"></i></li>
-                                <li><i class="lni lni-star"></i></li>
-                                <li><span>4.0 Review(s)</span></li>
-                            </ul>
-                            <div class="price">
-                                <span>$70.00</span>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- End Single Product -->
-                </div>
-                <div class="col-lg-3 col-md-6 col-12">
-                    <!-- Start Single Product -->
-                    <div class="single-product">
-                        <div class="product-image">
-                            <img src="assets/images/products/product-7.jpg" alt="#">
-                            <span class="sale-tag">-50%</span>
-                            <div class="button">
-                                <a href="product-details.html" class="btn"><i class="lni lni-cart"></i> Add to Cart</a>
-                            </div>
-                        </div>
-                        <div class="product-info">
-                            <span class="category">Headphones</span>
-                            <h4 class="title">
-                                <a href="product-grids.html">PX7 Wireless Headphones</a>
-                            </h4>
-                            <ul class="review">
-                                <li><i class="lni lni-star-filled"></i></li>
-                                <li><i class="lni lni-star-filled"></i></li>
-                                <li><i class="lni lni-star-filled"></i></li>
-                                <li><i class="lni lni-star-filled"></i></li>
-                                <li><i class="lni lni-star"></i></li>
-                                <li><span>4.0 Review(s)</span></li>
-                            </ul>
-                            <div class="price">
-                                <span>$100.00</span>
-                                <span class="discount-price">$200.00</span>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- End Single Product -->
-                </div>
-                <div class="col-lg-3 col-md-6 col-12">
-                    <!-- Start Single Product -->
-                    <div class="single-product">
-                        <div class="product-image">
-                            <img src="assets/images/products/product-8.jpg" alt="#">
-                            <div class="button">
-                                <a href="product-details.html" class="btn"><i class="lni lni-cart"></i> Add to Cart</a>
-                            </div>
-                        </div>
-                        <div class="product-info">
-                            <span class="category">Laptop</span>
-                            <h4 class="title">
-                                <a href="product-grids.html">Apple MacBook Air</a>
-                            </h4>
-                            <ul class="review">
-                                <li><i class="lni lni-star-filled"></i></li>
-                                <li><i class="lni lni-star-filled"></i></li>
-                                <li><i class="lni lni-star-filled"></i></li>
-                                <li><i class="lni lni-star-filled"></i></li>
-                                <li><i class="lni lni-star-filled"></i></li>
-                                <li><span>5.0 Review(s)</span></li>
-                            </ul>
-                            <div class="price">
-                                <span>$899.00</span>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- End Single Product -->
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- End Trending Product Area -->
-
-
-    <!-- Start Shipping Info -->
-    <section class="shipping-info">
-        <div class="container">
-            <ul>
-                <!-- Free Shipping -->
-                <li>
-                    <div class="media-icon">
-                        <i class="lni lni-delivery"></i>
-                    </div>
-                    <div class="media-body">
-                        <h5>Free Shipping</h5>
-                        <span>On order over $99</span>
-                    </div>
-                </li>
-                <!-- Money Return -->
-                <li>
-                    <div class="media-icon">
-                        <i class="lni lni-support"></i>
-                    </div>
-                    <div class="media-body">
-                        <h5>24/7 Support.</h5>
-                        <span>Live Chat Or Call.</span>
-                    </div>
-                </li>
-                <!-- Support 24/7 -->
-                <li>
-                    <div class="media-icon">
-                        <i class="lni lni-credit-cards"></i>
-                    </div>
-                    <div class="media-body">
-                        <h5>Online Payment.</h5>
-                        <span>Secure Payment Services.</span>
-                    </div>
-                </li>
-                <!-- Safe Payment -->
-                <li>
-                    <div class="media-icon">
-                        <i class="lni lni-reload"></i>
-                    </div>
-                    <div class="media-body">
-                        <h5>Easy Return.</h5>
-                        <span>Hassle Free Shopping.</span>
-                    </div>
-                </li>
-            </ul>
-        </div>
-    </section>
-    <!-- End Shipping Info -->
-
-    <!-- Start Footer Area -->
-    <footer class="footer">
-        <!-- Start Footer Top -->
-        <div class="footer-top">
-            <div class="container">
-                <div class="inner-content">
-                    <div class="row">
-                        <div class="col-lg-3 col-md-4 col-12">
-                            <div class="footer-logo">
-                                <a href="index.html">
-                                    <img src="assets/images/logo/white-logo.svg" alt="#">
-                                </a>
-                            </div>
-                        </div>
-                        <div class="col-lg-9 col-md-8 col-12">
-                            <div class="footer-newsletter">
-                                <h4 class="title">
-                                    Subscribe to our Newsletter
-                                    <span>Get all the latest information, Sales and Offers.</span>
-                                </h4>
-                                <div class="newsletter-form-head">
-                                    <form action="#" method="get" target="_blank" class="newsletter-form">
-                                        <input name="EMAIL" placeholder="Email address here..." type="email">
-                                        <div class="button">
-                                            <button class="btn">Subscribe<span class="dir-part"></span></button>
-                                        </div>
-                                    </form>
+                            <div class="row justify-content-center">
+                                <div class="col-lg-8 text-center">
+                                    <h2 class="text-white" style="font-size: 3.5rem; font-weight: 700; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">
+                                        New Arrivals <span style="color: #ffd700;">Every Week</span>
+                                    </h2>
+                                    <p class="text-white mb-4" style="font-size: 1.3rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">
+                                        Fresh books added regularly — don't miss out on the latest releases
+                                    </p>
+                                    <div class="button">
+                                        <a href="<?= $isLoggedIn ? 'shop.php' : 'login.php' ?>" class="btn btn-light btn-lg px-5 py-3" style="border-radius: 50px; font-weight: 600;">
+                                            <i class="lni lni-star me-2"></i> Explore Now
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Slide 3 -->
+                    <div class="single-slider" style="background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=1920&h=600&fit=crop') center/cover no-repeat; min-height: 600px;">
+                        <div class="content container">
+                            <div class="row justify-content-center">
+                                <div class="col-lg-8 text-center">
+                                    <h2 class="text-white" style="font-size: 3.5rem; font-weight: 700; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">
+                                        <span style="color: #ffd700;">Free Shipping</span> on All Orders
+                                    </h2>
+                                    <p class="text-white mb-4" style="font-size: 1.3rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">
+                                        Get your favorite books delivered to your doorstep at no extra cost
+                                    </p>
+                                    <div class="button">
+                                        <a href="<?= $isLoggedIn ? 'shop.php' : 'login.php' ?>" class="btn btn-light btn-lg px-5 py-3" style="border-radius: 50px; font-weight: 600;">
+                                            <i class="lni lni-delivery me-2"></i> Start Shopping
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
-        <!-- End Footer Top -->
-        <!-- Start Footer Middle -->
-        <div class="footer-middle">
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-5" style="background: #f8f9fa;">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3 col-md-6">
+                    <div class="text-center p-4">
+                        <div class="mb-3">
+                            <i class="lni lni-delivery" style="font-size: 3rem; color: #667eea;"></i>
+                        </div>
+                        <h5>Free Shipping</h5>
+                        <p class="text-muted mb-0">On all orders</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="text-center p-4">
+                        <div class="mb-3">
+                            <i class="lni lni-credit-cards" style="font-size: 3rem; color: #667eea;"></i>
+                        </div>
+                        <h5>Secure Payment</h5>
+                        <p class="text-muted mb-0">100% secure transactions</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="text-center p-4">
+                        <div class="mb-3">
+                            <i class="lni lni-reload" style="font-size: 3rem; color: #667eea;"></i>
+                        </div>
+                        <h5>Easy Returns</h5>
+                        <p class="text-muted mb-0">30-day return policy</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="text-center p-4">
+                        <div class="mb-3">
+                            <i class="lni lni-support" style="font-size: 3rem; color: #667eea;"></i>
+                        </div>
+                        <h5>24/7 Support</h5>
+                        <p class="text-muted mb-0">Always here to help</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Start Trending Books Area -->
+    <section class="trending-product section">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="section-title text-center">
+                        <h2 style="font-size: 2.5rem; font-weight: 700;">Featured Books</h2>
+                        <p class="text-muted">Discover our handpicked selection of bestselling and trending books</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <?php
+                if ($resultBooks->num_rows > 0) {
+                    while ($book = $resultBooks->fetch_assoc()) {
+                        $avgRating = round($book['avg_rating']);
+                        $reviewCount = $book['review_count'];
+                ?>
+                        <div class="col-lg-3 col-md-4 col-sm-6 col-12">
+                            <div class="card shadow-sm h-100 border-0" style="transition: transform 0.3s; cursor: pointer;"
+                                onmouseover="this.style.transform='translateY(-10px)'"
+                                onmouseout="this.style.transform='translateY(0)'">
+                                <div class="card-body p-3">
+                                    <!-- Book Image -->
+                                    <div class="position-relative mb-3" style="height: 250px; overflow: hidden; border-radius: 10px;">
+                                        <?php if (!empty($book['image_path'])): ?>
+                                            <img src="<?= htmlspecialchars($book['image_path']) ?>"
+                                                alt="<?= htmlspecialchars($book['book_name']) ?>"
+                                                class="w-100 h-100"
+                                                style="object-fit: cover;">
+                                        <?php else: ?>
+                                            <div class="w-100 h-100 d-flex align-items-center justify-content-center"
+                                                style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                                <i class="lni lni-book" style="font-size: 5rem; color: white; opacity: 0.5;"></i>
+                                            </div>
+                                        <?php endif; ?>
+
+                                        <!-- Stock Badge -->
+                                        <?php if ($book['stock'] > 0): ?>
+                                            <span class="badge bg-success position-absolute" style="top: 10px; right: 10px;">
+                                                In Stock
+                                            </span>
+                                        <?php else: ?>
+                                            <span class="badge bg-danger position-absolute" style="top: 10px; right: 10px;">
+                                                Out of Stock
+                                            </span>
+                                        <?php endif; ?>
+                                    </div>
+
+                                    <!-- Category -->
+                                    <span class="badge bg-light text-dark mb-2">
+                                        <?= htmlspecialchars($book['category_name'] ?? 'Uncategorized') ?>
+                                    </span>
+
+                                    <!-- Book Title -->
+                                    <h6 class="mb-1" style="height: 40px; overflow: hidden;">
+                                        <a href="product.php?book_id=<?= $book['book_id'] ?>"
+                                            class="text-dark text-decoration-none">
+                                            <?= htmlspecialchars($book['book_name']) ?>
+                                        </a>
+                                    </h6>
+
+                                    <!-- Author -->
+                                    <small class="text-muted d-block mb-2">
+                                        by <?= htmlspecialchars($book['author_name'] ?? 'Unknown') ?>
+                                    </small>
+
+                                    <!-- Rating -->
+                                    <div class="mb-2">
+                                        <?php for ($i = 0; $i < $avgRating; $i++): ?>
+                                            <i class="lni lni-star-filled text-warning"></i>
+                                        <?php endfor; ?>
+                                        <?php for ($i = $avgRating; $i < 5; $i++): ?>
+                                            <i class="lni lni-star text-warning"></i>
+                                        <?php endfor; ?>
+                                        <small class="text-muted">(<?= $reviewCount ?>)</small>
+                                    </div>
+
+                                    <!-- Price -->
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h5 class="mb-0 text-primary" style="font-weight: 700;">
+                                            $<?= number_format($book['price'], 2) ?>
+                                        </h5>
+                                    </div>
+
+                                    <!-- Buttons -->
+                                    <div class="d-flex gap-2">
+                                        <a href="<?= $isLoggedIn ? 'product.php?book_id=' . $book["book_id"] : 'login.php' ?>"
+                                            class="btn btn-outline-primary btn-sm w-100">
+                                            <i class="lni lni-eye"></i> View Details
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                <?php
+                    }
+                } else {
+                    echo '<div class="col-12"><p class="text-center text-muted">No books available at the moment.</p></div>';
+                }
+                ?>
+            </div>
+
+            <!-- View All Button -->
+            <div class="row mt-5">
+                <div class="col-12 text-center">
+                    <a href="shop.php" class="btn btn-primary btn-lg px-5" style="border-radius: 50px;">
+                        <i class="lni lni-book me-2"></i> View All Books
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-8 col-md-7">
+                    <h3 class="text-white mb-2" style="font-weight: 700;">
+                        Join Our Book-Loving Community
+                    </h3>
+                    <p class="text-white mb-0" style="opacity: 0.9;">
+                        Get exclusive deals, new release alerts, and personalized recommendations
+                    </p>
+                </div>
+                <div class="col-lg-4 col-md-5 text-end">
+                    <a href="register.php" class="btn btn-light btn-lg px-5" style="border-radius: 50px;">
+                        Sign Up Now
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Start Footer Area -->
+    <footer class="footer">
+        <div class="footer-top">
             <div class="container">
-                <div class="bottom-inner">
+                <div class="inner-content">
                     <div class="row">
-                        <div class="col-lg-3 col-md-6 col-12">
-                            <!-- Single Widget -->
-                            <div class="single-footer f-contact">
-                                <h3>Get In Touch With Us</h3>
-                                <p class="phone">Phone: +1 (900) 33 169 7720</p>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <div class="footer-logo">
+                                <h3 class="text-white mb-3">📚 BookSphere</h3>
+                                <p class="text-white">Your trusted online bookstore for discovering amazing reads.</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <div class="single-footer f-link">
+                                <h3>Quick Links</h3>
                                 <ul>
-                                    <li><span>Monday-Friday: </span> 9.00 am - 8.00 pm</li>
-                                    <li><span>Saturday: </span> 10.00 am - 6.00 pm</li>
+                                    <li><a href="shop.php">Browse Books</a></li>
+                                    <li><a href="login.php">Login</a></li>
+                                    <li><a href="register.php">Register</a></li>
                                 </ul>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 col-12">
+                            <div class="single-footer f-contact">
+                                <h3>Contact Us</h3>
+                                <p class="phone">Phone: +1 (900) 33 169 7720</p>
                                 <p class="mail">
-                                    <a href="mailto:support@shopgrids.com">support@shopgrids.com</a>
+                                    <a href="mailto:support@booksphere.com">support@booksphere.com</a>
                                 </p>
                             </div>
-                            <!-- End Single Widget -->
-                        </div>
-                        <div class="col-lg-3 col-md-6 col-12">
-                            <!-- Single Widget -->
-                            <div class="single-footer our-app">
-                                <h3>Our Mobile App</h3>
-                                <ul class="app-btn">
-                                    <li>
-                                        <a href="javascript:void(0)">
-                                            <i class="lni lni-apple"></i>
-                                            <span class="small-title">Download on the</span>
-                                            <span class="big-title">App Store</span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="javascript:void(0)">
-                                            <i class="lni lni-play-store"></i>
-                                            <span class="small-title">Download on the</span>
-                                            <span class="big-title">Google Play</span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                            <!-- End Single Widget -->
-                        </div>
-                        <div class="col-lg-3 col-md-6 col-12">
-                            <!-- Single Widget -->
-                            <div class="single-footer f-link">
-                                <h3>Information</h3>
-                                <ul>
-                                    <li><a href="javascript:void(0)">About Us</a></li>
-                                    <li><a href="javascript:void(0)">Contact Us</a></li>
-                                    <li><a href="javascript:void(0)">Downloads</a></li>
-                                    <li><a href="javascript:void(0)">Sitemap</a></li>
-                                    <li><a href="javascript:void(0)">FAQs Page</a></li>
-                                </ul>
-                            </div>
-                            <!-- End Single Widget -->
-                        </div>
-                        <div class="col-lg-3 col-md-6 col-12">
-                            <!-- Single Widget -->
-                            <div class="single-footer f-link">
-                                <h3>Shop Departments</h3>
-                                <ul>
-                                    <li><a href="javascript:void(0)">Computers & Accessories</a></li>
-                                    <li><a href="javascript:void(0)">Smartphones & Tablets</a></li>
-                                    <li><a href="javascript:void(0)">TV, Video & Audio</a></li>
-                                    <li><a href="javascript:void(0)">Cameras, Photo & Video</a></li>
-                                    <li><a href="javascript:void(0)">Headphones</a></li>
-                                </ul>
-                            </div>
-                            <!-- End Single Widget -->
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- End Footer Middle -->
-        <!-- Start Footer Bottom -->
         <div class="footer-bottom">
             <div class="container">
                 <div class="inner-content">
                     <div class="row align-items-center">
-                        <div class="col-lg-4 col-12">
-                            <div class="payment-gateway">
-                                <span>We Accept:</span>
-                                <img src="assets/images/footer/credit-cards-footer.png" alt="#">
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-12">
+                        <div class="col-12 text-center">
                             <div class="copyright">
-                                <p>Designed and Developed by<a href="https://graygrids.com/" rel="nofollow"
-                                        target="_blank">GrayGrids</a></p>
+                                <p>© 2025 BookSphere. All rights reserved.</p>
                             </div>
-                        </div>
-                        <div class="col-lg-4 col-12">
-                            <ul class="socila">
-                                <li>
-                                    <span>Follow Us On:</span>
-                                </li>
-                                <li><a href="javascript:void(0)"><i class="lni lni-facebook-filled"></i></a></li>
-                                <li><a href="javascript:void(0)"><i class="lni lni-twitter-original"></i></a></li>
-                                <li><a href="javascript:void(0)"><i class="lni lni-instagram"></i></a></li>
-                                <li><a href="javascript:void(0)"><i class="lni lni-google"></i></a></li>
-                            </ul>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- End Footer Bottom -->
     </footer>
-    <!--/ End Footer Area -->
 
-    <!-- ========================= scroll-top ========================= -->
     <a href="#" class="scroll-top">
         <i class="lni lni-chevron-up"></i>
     </a>
 
-    <!-- ========================= JS here ========================= -->
     <script src="assets/js/bootstrap.min.js"></script>
     <script src="assets/js/tiny-slider.js"></script>
     <script src="assets/js/glightbox.min.js"></script>
@@ -779,37 +402,15 @@
             slideBy: 'page',
             autoplay: true,
             autoplayButtonOutput: false,
+            autoplayTimeout: 5000,
             mouseDrag: true,
             gutter: 0,
             items: 1,
-            nav: false,
+            nav: true,
+            navPosition: 'bottom',
             controls: true,
             controlsText: ['<i class="lni lni-chevron-left"></i>', '<i class="lni lni-chevron-right"></i>'],
-        });
-
-        //======== Brand Slider
-        tns({
-            container: '.brands-logo-carousel',
-            autoplay: true,
-            autoplayButtonOutput: false,
-            mouseDrag: true,
-            gutter: 15,
-            nav: false,
-            controls: false,
-            responsive: {
-                0: {
-                    items: 1,
-                },
-                540: {
-                    items: 3,
-                },
-                768: {
-                    items: 5,
-                },
-                992: {
-                    items: 6,
-                }
-            }
+            speed: 800
         });
     </script>
 </body>

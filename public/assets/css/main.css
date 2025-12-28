@@ -1436,7 +1436,7 @@ ol {
 }
 
 .header .topbar {
-  background-color: rgb(8, 19, 56);
+  background-color: #0167f3;
   padding: 18px 0;
 }
 
@@ -1461,7 +1461,7 @@ ol {
   color: #fff !important;
   font-weight: 500;
   font-size: 14px;
-  background-color: #081828 !important;
+  /* background-color: #081828 !important; */
 }
 
 .header .topbar .top-left .menu-top-link .select-position select:focus {
@@ -1586,10 +1586,6 @@ ol {
   font-weight: 500;
   font-size: 14px;
   white-space: nowrap;
-}
-
-.header .topbar .top-end .user-login li a:hover {
-  color: #0167f3;
 }
 
 .header .header-middle {

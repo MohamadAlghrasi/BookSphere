@@ -44,7 +44,9 @@ $shipping = 0;
 $total = $subtotal + $shipping;
 
 // Handle Place Order
+// Handle Place Order
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['placeOrder'])) {
+
     $fullName = trim($_POST['full_name']);
     $phone = trim($_POST['phone']);
     $email = trim($_POST['email']);
@@ -57,46 +59,86 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['placeOrder'])) {
     if (empty($fullName) || empty($phone) || empty($email) || empty($city) || empty($address)) {
         $_SESSION['error_message'] = "Please fill in all required fields!";
     } else {
-        // Insert order
-        $sqlOrder = "INSERT INTO orders (user_id, total_amount, shipping_address, city, phone, payment_method, notes, status, created_at) 
-                     VALUES (?, ?, ?, ?, ?, ?, ?, 'Pending', NOW())";
 
-        $resultOrder = executeQuery($conn, $sqlOrder, "idsssss", [
-            $user_id,
-            $total,
-            $address,
-            $city,
-            $phone,
-            $paymentMethod,
-            $notes
-        ]);
+        // (اختياري لكن مهم) Transaction عشان ما يصير نصف طلب
+        $conn->begin_transaction();
 
-        if ($resultOrder) {
+        try {
+            // 1) Insert order (لاحظي pending + type id)
+            $sqlOrder = "INSERT INTO orders (user_id, total_amount, order_status, created_at)
+                         VALUES (?, ?, 'pending', NOW())";
+
+            $resultOrder = executeQuery($conn, $sqlOrder, "id", [
+                $user_id,
+                $total
+            ]);
+
+            if (!$resultOrder) {
+                throw new Exception("Failed to insert order");
+            }
+
+            // احفظي order_id مباشرة
             $order_id = $conn->insert_id;
 
-            // Insert order items
+            // 2) Insert payment (صححي الأقواس والـ placeholders)
+            $sqlPayment = "INSERT INTO payment (user_id, order_id, payment_method, payment_status)
+                           VALUES (?, ?, ?, 'unpaid')";
+
+            $resultPayment = executeQuery($conn, $sqlPayment, "iis", [
+                $user_id,
+                $order_id,
+                $paymentMethod
+            ]);
+
+            if (!$resultPayment) {
+                throw new Exception("Failed to insert payment");
+            }
+
+            // 3) Update user info (لازم WHERE + نوع bind)
+            $sqlUpdateUser = "UPDATE users SET phone = ?, address = ?, city = ? WHERE user_id = ?";
+            $resultUpdate = executeQuery($conn, $sqlUpdateUser, "sssi", [
+                $phone,
+                $address,
+                $city,
+                $user_id
+            ]);
+
+            if (!$resultUpdate) {
+                throw new Exception("Failed to update user info");
+            }
+
+            // 4) Insert order items into book_order (اسم الجدول حسب سكيمتك)
             foreach ($cartItems as $item) {
-                $sqlOrderItem = "INSERT INTO order_items (order_id, book_id, quantity, price) VALUES (?, ?, ?, ?)";
-                executeQuery($conn, $sqlOrderItem, "iiid", [
-                    $order_id,
+                $sqlOrderItem = "INSERT INTO book_order (book_id, order_id, quantity, price)
+                                 VALUES (?, ?, ?, ?)";
+                $ok = executeQuery($conn, $sqlOrderItem, "iiid", [
                     $item['book_id'],
+                    $order_id,
                     $item['quantity'],
                     $item['price']
                 ]);
+
+                if (!$ok) {
+                    throw new Exception("Failed to insert order item");
+                }
             }
 
-            // Clear cart
+            // 5) Clear cart
             $sqlClearCart = "DELETE FROM cart WHERE user_id = ?";
             executeQuery($conn, $sqlClearCart, "i", [$user_id]);
+
+            $conn->commit();
 
             $_SESSION['success_message'] = "Order placed successfully! Order #$order_id";
             header("Location: orders.php");
             exit();
-        } else {
-            $_SESSION['error_message'] = "Failed to place order. Please try again.";
+        } catch (Exception $e) {
+            $conn->rollback();
+            $_SESSION['error_message'] = "Failed to place order: " . $e->getMessage();
         }
     }
 }
+
 
 ?>
 <!DOCTYPE html>
@@ -195,7 +237,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['placeOrder'])) {
                                     <label class="form-label">Payment Method *</label>
                                     <select class="form-select" name="payment_method" required>
                                         <option value="Cash on Delivery">Cash on Delivery</option>
-                                        <option value="Credit Card">Credit Card (Coming Soon)</option>
+                                        <option value="Credit Card">Credit Card</option>
                                     </select>
                                 </div>
 
@@ -241,19 +283,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['placeOrder'])) {
                             <button type="submit" name="placeOrder" class="btn btn-primary w-100">
                                 Place Order
                             </button>
-                        </div>
-                    </div>
-
-                    <!-- Order Items Preview -->
-                    <div class="card shadow-sm mt-3">
-                        <div class="card-body">
-                            <h6 class="mb-3">Items in Order</h6>
-                            <?php foreach ($cartItems as $item): ?>
-                                <div class="d-flex justify-content-between mb-2">
-                                    <small><?= htmlspecialchars($item['book_name']) ?> (x<?= $item['quantity'] ?>)</small>
-                                    <small>$<?= number_format($item['price'] * $item['quantity'], 2) ?></small>
-                                </div>
-                            <?php endforeach; ?>
                         </div>
                     </div>
                 </div>

@@ -40,45 +40,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['updateProfile'])) {
 }
 
 // Handle password change
+// Handle password change
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['changePassword'])) {
     $currentPassword = $_POST['current_password'];
     $newPassword = $_POST['new_password'];
     $confirmPassword = $_POST['confirm_password'];
 
-    // Verify current password (field name is 'pass' in database)
+    // Verify current password (hashed in DB)
     if (password_verify($currentPassword, $user['pass'])) {
-        if ($newPassword === $confirmPassword) {
-            if (strlen($newPassword) >= 6) {
-                $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
-                $sqlUpdatePwd = "UPDATE users SET pass = ? WHERE user_id = ?";
-                $result = executeQuery($conn, $sqlUpdatePwd, "si", [$hashedPassword, $user_id]);
 
-                if ($result) {
-                    $_SESSION['success_message'] = "Password changed successfully!";
-                    header("Location: profile.php");
-                    exit();
-                } else {
-                    $_SESSION['error_message'] = "Failed to change password!";
-                }
-            } else {
-                $_SESSION['error_message'] = "Password must be at least 6 characters!";
-            }
-        } else {
+        if ($newPassword !== $confirmPassword) {
             $_SESSION['error_message'] = "New passwords do not match!";
+        } elseif (strlen($newPassword) < 6) {
+            $_SESSION['error_message'] = "Password must be at least 6 characters!";
+        } else {
+            // Hash the new password قبل التخزين
+            $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+
+            $sqlUpdatePwd = "UPDATE users SET pass = ? WHERE user_id = ?";
+            $result = executeQuery($conn, $sqlUpdatePwd, "si", [$hashedPassword, $user_id]);
+
+            if ($result) {
+                $_SESSION['success_message'] = "Password changed successfully!";
+                header("Location: profile.php");
+                exit();
+            } else {
+                $_SESSION['error_message'] = "Failed to change password!";
+            }
         }
     } else {
         $_SESSION['error_message'] = "Current password is incorrect!";
     }
 }
-
-// Get user statistics
-$sqlOrderCount = "SELECT COUNT(*) as count FROM orders WHERE user_id = ?";
-$resultOrderCount = selectQuery($conn, $sqlOrderCount, "i", [$user_id]);
-$orderCount = $resultOrderCount->fetch_assoc()['count'];
-
-$sqlTotalSpent = "SELECT SUM(total_amount) as total FROM orders WHERE user_id = ? AND order_status != 'cancelled'";
-$resultTotalSpent = selectQuery($conn, $sqlTotalSpent, "i", [$user_id]);
-$totalSpent = $resultTotalSpent->fetch_assoc()['total'] ?? 0;
 
 ?>
 <!DOCTYPE html>
@@ -107,9 +100,7 @@ $totalSpent = $resultTotalSpent->fetch_assoc()['total'] ?? 0;
                 <div class="d-flex gap-3 align-items-center">
                     <a href="shop.php" class="text-decoration-none">Shop</a>
                     <a href="profile.php" class="text-decoration-none">Account</a>
-                    <a href="wishlist.php" class="text-decoration-none"><i class="lni lni-heart"></i> Wishlist</a>
                     <a href="cart.php" class="text-decoration-none"><i class="lni lni-cart"></i> Cart</a>
-                    <a href="orders.php" class="text-decoration-none">Orders</a>
                     <a href="logout.php" class="text-decoration-none text-danger">Logout</a>
                 </div>
             </div>
@@ -234,9 +225,6 @@ $totalSpent = $resultTotalSpent->fetch_assoc()['total'] ?? 0;
                             </a>
                             <a href="cart.php" class="btn btn-outline-primary">
                                 <i class="lni lni-cart me-2"></i> My Cart
-                            </a>
-                            <a href="wishlist.php" class="btn btn-outline-primary">
-                                <i class="lni lni-heart me-2"></i> My Wishlist
                             </a>
                             <a href="shop.php" class="btn btn-outline-primary">
                                 <i class="lni lni-shopping-basket me-2"></i> Continue Shopping

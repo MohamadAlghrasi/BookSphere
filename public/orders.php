@@ -11,13 +11,12 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id'];
 
 // Get user's orders
-$sqlOrders = "SELECT order_id, total_amount, status, created_at 
+$sqlOrders = "SELECT order_id, total_amount, order_status, created_at 
               FROM orders 
               WHERE user_id = ? 
               ORDER BY created_at DESC";
 
 $resultOrders = selectQuery($conn, $sqlOrders, "i", [$user_id]);
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -91,28 +90,47 @@ $resultOrders = selectQuery($conn, $sqlOrders, "i", [$user_id]);
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php while ($order = $resultOrders->fetch_assoc()):
-                                    // Determine badge color based on status
+
+                                <?php
+                                $counter = 1;
+                                while ($order = $resultOrders->fetch_assoc()):
+                                    // Badge color
                                     $badgeClass = 'bg-secondary';
-                                    if ($order['status'] === 'Pending') $badgeClass = 'bg-warning';
-                                    elseif ($order['status'] === 'Processing') $badgeClass = 'bg-info';
-                                    elseif ($order['status'] === 'Shipped') $badgeClass = 'bg-primary';
-                                    elseif ($order['status'] === 'Delivered') $badgeClass = 'bg-success';
-                                    elseif ($order['status'] === 'Cancelled') $badgeClass = 'bg-danger';
+                                    if ($order['order_status'] === 'pending') {
+                                        $badgeClass = 'bg-warning text-dark';
+                                    } elseif ($order['order_status'] === 'shipped') {
+                                        $badgeClass = 'bg-success';
+                                    } elseif ($order['order_status'] === 'cancelled') {
+                                        $badgeClass = 'bg-danger';
+                                    }
+
+                                    $displayStatus = ucfirst($order['order_status']);
                                 ?>
                                     <tr>
-                                        <td><strong>#<?= $order['order_id'] ?></strong></td>
+                                        <td><strong>#<?= $counter ?></strong></td>
+
                                         <td><?= date('M d, Y', strtotime($order['created_at'])) ?></td>
-                                        <td><span class="badge <?= $badgeClass ?>"><?= htmlspecialchars($order['status']) ?></span></td>
+
+                                        <td>
+                                            <span class="badge <?= $badgeClass ?>">
+                                                <?= htmlspecialchars($displayStatus) ?>
+                                            </span>
+                                        </td>
+
                                         <td>$<?= number_format($order['total_amount'], 2) ?></td>
+
                                         <td class="text-end">
-                                            <a href="order_details.php?order_id=<?= $order['order_id'] ?>"
+                                            <a href="order_details.php?order_id=<?= $order['order_id'] ?>&n=<?= $counter ?>"
                                                 class="btn btn-sm btn-outline-primary">
                                                 View Details
                                             </a>
                                         </td>
                                     </tr>
-                                <?php endwhile; ?>
+                                <?php
+                                    $counter++;
+                                endwhile;
+                                ?>
+
                             </tbody>
                         </table>
                     </div>

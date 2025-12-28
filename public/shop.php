@@ -8,7 +8,7 @@ $category = $_GET['category'] ?? '';
 $sortBy = $_GET['sort'] ?? '';
 
 // Build query dynamically
-$sql = "SELECT b.book_id, b.book_name, b.price, b.stock, a.author_name, c.name as category_name, i.image_path
+$sql = "SELECT b.discount_percentage ,b.book_id, b.book_name, b.price, b.stock, a.author_name, c.name as category_name, i.image_path
         FROM Books b
         LEFT JOIN Book_Author ba ON b.book_id = ba.book_id 
         LEFT JOIN Authors a ON a.author_id = ba.author_id
@@ -86,13 +86,9 @@ $resultCat = selectQuery($conn, $sqlCat);
 
                 <div class="d-flex gap-3 align-items-center">
                     <a href="profile.php" class="text-decoration-none">Account</a>
-                    <a href="wishlist.php" class="text-decoration-none">
-                        <i class="lni lni-heart"></i> Wishlist
-                    </a>
                     <a href="cart.php" class="text-decoration-none">
                         <i class="lni lni-cart"></i> Cart
                     </a>
-                    <a href="orders.php" class="text-decoration-none">Orders</a>
                     <a href="logout.php" class="text-decoration-none text-danger">Logout</a>
                 </div>
             </div>
@@ -166,15 +162,22 @@ $resultCat = selectQuery($conn, $sqlCat);
             <?php
             if ($result->num_rows > 0) {
                 while ($row = $result->fetch_assoc()) {
+                    $discount = (int)($row['discount_percentage'] ?? 0);
+                    $finalPrice = $row['price'];
+
+                    if ($discount > 0) {
+                        $finalPrice = $finalPrice - ($finalPrice * $discount / 100);
+                    }
+
             ?>
                     <div class="col-lg-3 col-md-4 col-6">
                         <div class="card shadow-sm h-100">
                             <div class="card-body">
                                 <?php if (!empty($row['image_path'])): ?>
-                                    <img src="<?= htmlspecialchars($row['image_path']) ?>" 
-                                         alt="Book cover" 
-                                         class="rounded mb-3 w-100" 
-                                         style="height:200px;object-fit:cover;">
+                                    <img src="<?= htmlspecialchars($row['image_path']) ?>"
+                                        alt="Book cover"
+                                        class="rounded mb-3 w-100"
+                                        style="height:200px;object-fit:cover;">
                                 <?php else: ?>
                                     <div class="bg-light rounded mb-3" style="height:200px;"></div>
                                 <?php endif; ?>
@@ -183,12 +186,16 @@ $resultCat = selectQuery($conn, $sqlCat);
                                 <small class="text-muted d-block mb-2"><?= htmlspecialchars($row['author_name'] ?? 'Unknown') ?></small>
 
                                 <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <strong class="text-primary">$<?= number_format($row['price'], 2) ?></strong>
-                                    <?php if ($row['stock'] > 0): ?>
+                                    <div class="mb-2">
+                                        <strong class="text-primary">$<?= number_format($finalPrice, 2) ?></strong>
+                                        <span style="text-decoration: line-through;"><?= '$' . $row['price'] ?></span>
+                                    </div>
+                                    <span class="badge bg-success"><?= '%' . $row['discount_percentage'] ?></span>
+                                    <!-- <?php if ($row['stock'] > 0): ?>
                                         <span class="badge bg-success">In Stock</span>
                                     <?php else: ?>
                                         <span class="badge bg-danger">Out of Stock</span>
-                                    <?php endif; ?>
+                                    <?php endif; ?> -->
                                 </div>
 
                                 <div class="d-flex gap-2">
